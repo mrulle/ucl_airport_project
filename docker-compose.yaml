@@ -28,6 +28,25 @@ services:
     depends_on:
       - rabbitmq
 
+  enricher:
+    container_name: enricher
+    restart: on-failure
+    build:
+      context: ./src/ContentEnricher
+      dockerfile: Dockerfile
+    volumes:
+      - enricher:/src
+    ports:
+    #Http
+    - "${Enricher_OutPORT}:${Enricher_PORT}"
+    depends_on:
+      - rabbitmq
+
+  postgres:
+   
+
 
 volumes:
   bookingapi:
+  enricher:
+  
