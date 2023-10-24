@@ -1,0 +1,33 @@
+version: '${DockerVersion}'
+
+services:
+  rabbitmq:
+    container_name: rabbitmq
+    restart: on-failure
+    image: rabbitmq:3.12.3-management-alpine
+    ports:
+      - "${RabbitMQServer_OutPORT}:${RabbitMQServerPort}"
+      - "${RabbitMQManagement_OutPORT}:${RabbitMQManagementPort}"
+    volumes:
+      - "${PWD}/rabbitmq.conf:/etc/rabbitmq/conf.d"
+
+  bookingapi:
+    container_name: bookingapi
+    restart: on-failure
+    build:
+      context: ./src/Booking
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    volumes:
+      - bookingapi:/src
+    ports:
+    #Http
+    - "${CSharp_API_OutPORT}:${CSharp_API_PORT}"
+    depends_on:
+      - rabbitmq
+
+
+volumes:
+  bookingapi:
