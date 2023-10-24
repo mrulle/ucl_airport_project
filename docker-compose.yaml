@@ -15,7 +15,7 @@ services:
     container_name: bookingapi
     restart: on-failure
     build:
-      context: ./src/BookingApi
+      context: ./src/bookingapi
       dockerfile: Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=${Environment}
@@ -27,23 +27,43 @@ services:
     depends_on:
       - rabbitmq
 
-
-
   enricher:
     container_name: enricher
     restart: on-failure
     build:
-      context: ./src/ContentEnricher
+      context: ./src/contentenricher
       dockerfile: Dockerfile
     volumes:
       - enricher:/src
     depends_on:
       - rabbitmq
 
-   
+  postgres:
+    container_name: postgres
+    image: postgres:14-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_USER=root
+      - POSTGRES_DB=Booking
+  
+  adminer:
+    container_name: adminer
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
 
 
 volumes:
   bookingapi:
   enricher:
+  postgres:
+  adminer:
+  rabbitmq:
   
