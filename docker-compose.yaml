@@ -67,6 +67,8 @@ volumes:
   bookingapi:
   enricher:
   postgres:
+    external:
+      name: ${POSTGRES_VOLUME}
   adminer:
   rabbitmq:
   
