@@ -9,7 +9,7 @@ services:
       - "${RabbitMQServer_OutPORT}:${RabbitMQServerPort}"
       - "${RabbitMQManagement_OutPORT}:${RabbitMQManagementPort}"
     volumes:
-      - "${PWD}/rabbitmq.conf:/etc/rabbitmq/conf.d"
+      - "./rabbitmq.conf:/etc/rabbitmq/conf.d"
 
   bookingapi:
     container_name: bookingapi
@@ -67,8 +67,7 @@ volumes:
   bookingapi:
   enricher:
   postgres:
-    external:
-      name: ${POSTGRES_VOLUME}
+    name: ${POSTGRES_VOLUME}
   adminer:
   rabbitmq:
   
