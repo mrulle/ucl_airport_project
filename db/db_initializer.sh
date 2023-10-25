@@ -23,16 +23,16 @@ main() {
     initalize_database_tables
     initalize_database_views
 
-    sh ../x-db_seeder.sh
+    /bin/bash ../x-db_seeder.sh
 }
 
 #check all required env vars set
 #echos texting explaining which arent set
 #and the name of the ones that need to be
 check_env_vars_set() {
-    for required_env_var in ${REQUIRED_ENV_VARS[@]}; do 
+    for required_env_var in ${REQUIRED_ENV_VARS[@]}; do
         if [[ -z "${!required_env_var}" ]]; then
-            echo "ERROR: Enviornment variable '$required_env_var' not set. 
+            echo "ERROR: Enviornment variable '$required_env_var' not set.
             Make sure you have the following enviornment varaibles set:
 
             ${REQUIRED_ENV_VARS[@]}
@@ -51,7 +51,7 @@ init_user_and_db() {
     psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
         CREATE USER $APP_DB_USER WITH PASSWORD '$APP_DB_PASS';
         CREATE DATABASE $APP_DB_NAME;
-        GRANT ALL PRIVILEGES ON DATABASE $APP_DB_NAME TO $APP_DB_USER; 
+        GRANT ALL PRIVILEGES ON DATABASE $APP_DB_NAME TO $APP_DB_USER;
 EOSQL
 }
 #\connect $APP_DB_NAME $APP_DB_USER
@@ -64,7 +64,7 @@ initalize_database_tables(){
             id uuid PRIMARY KEY,
             name VARCHAR(255),
             email VARCHAR(255),
-            photo BYTEA, 
+            photo BYTEA,
             passport_number VARCHAR(255)
         );
 
@@ -171,7 +171,7 @@ initalize_checkin_view(){
     echo "Creating checkin_view"
     psql -v ON_ERROR_STOP=1 --username "$APP_DB_USER" --dbname "$APP_DB_NAME" <<-EOSQL
     BEGIN;
-    
+
     create or replace view vw_checkin
     AS SELECT
         b.id,
@@ -189,7 +189,7 @@ initalize_flight_info_view(){
     echo "Creating flight_info_view"
     psql -v ON_ERROR_STOP=1 --username "$APP_DB_USER" --dbname "$APP_DB_NAME" <<-EOSQL
     BEGIN;
-    
+
     create or replace view vw_flight_info
     AS SELECT
         p.id as plane_id,
