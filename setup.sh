@@ -17,4 +17,4 @@ else
     docker compose --env-file ./.env up -d
 fi
 
-#read -p "Press any key to continue" HELLO
+read -p "Press any key to continue" HELLO
