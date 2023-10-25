@@ -34,11 +34,14 @@ public class DevFlightInfoRepository: IFlightInfoRepository {
     public FlightInfoModel GetById(string id)
     {
         var item = flightInfoList.Where(x => x.FlightId == id);
-        if (item is null) {
+        if (item is null || item.Count() < 1) {
             throw new KeyNotFoundException($"item not found {id}");
         }
-        return (FlightInfoModel) item;
-
+        if (item.Count() > 1) {
+            throw new Exception("too many matching objects");
+        }
+        var result = item.ElementAt(0);
+        return result;
     }
 
     public string Update(FlightInfoModel item)
