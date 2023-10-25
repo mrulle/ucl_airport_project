@@ -8,25 +8,33 @@ namespace BookingApi.Controllers
     [ApiController]
     [Route("[controller]")]
     public class FlightInfoController: ControllerBase {
-        private readonly IRepository<FlightInfoModel> repo;
+        private readonly IFlightInfoRepository repo;
 
-        public FlightInfoController(IRepository<FlightInfoModel> repo)
+        public FlightInfoController(IFlightInfoRepository repo)
         {
             this.repo = repo;
         }
 
         [HttpGet]
-        public IActionResult Get() 
+        public IActionResult GetAll() 
         {
-            // return all available flights here
-            return Ok();
+            var result = repo.GetAll();
+            return Ok(result);
         }
 
-        [HttpGet]
-        public IActionResult Get(int id)
+        [HttpGet("{id}")]
+        public IActionResult GetById(string id)
         {
-            
-            return Ok();
+            var result = repo.GetById(id);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public IActionResult Post([FromBody] FlightInfoModel flightInfoModel) {
+            // TODO: return a createdAt timestamp thingy
+            var result = repo.Add(flightInfoModel);
+
+            return CreatedAtAction(nameof(GetById), new { id = result }, flightInfoModel);
         }
     }
 

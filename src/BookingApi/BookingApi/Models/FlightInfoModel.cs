@@ -1,8 +1,5 @@
 namespace BookingApi.Models {
     public class FlightInfoModel {
-        public FlightInfoModel() {
-
-        }
 
         public string PlaneId { get; set; }
         public string FlightId { get; set; }

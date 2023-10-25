@@ -7,19 +7,18 @@ namespace BookingApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CheckinController : ControllerBase
+    public class BoardingPassController : ControllerBase
     {
-        private readonly ICheckinRepository repo;
+        private readonly IBookingRepository repo;
 
-        public CheckinController(ICheckinRepository repo)
+        public BoardingPassController(IBookingRepository repo)
         {
             this.repo = repo;
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] CheckinModel model)
+        public IActionResult Get([FromBody] BookingModel model)
         {
-
             // implement code for checkin here
             return Ok();
         }

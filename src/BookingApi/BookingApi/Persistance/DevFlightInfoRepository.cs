@@ -3,9 +3,9 @@ using BookingApi.Models;
 namespace BookingApi.Persistance;
 
 
-public class DevRepository: IRepository<FlightInfoModel> {
+public class DevFlightInfoRepository: IFlightInfoRepository {
     static List<FlightInfoModel> flightInfoList = new List<FlightInfoModel>();
-    public DevRepository()
+    public DevFlightInfoRepository()
     {
         
     }

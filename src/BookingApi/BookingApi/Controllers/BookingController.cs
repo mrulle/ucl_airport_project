@@ -9,9 +9,9 @@ namespace BookingApi.Controllers
     [Route("[controller]")]
     public class BookingController : ControllerBase
     {
-        private readonly IRepository<BookingModel> repo;
+        private readonly IBookingRepository repo;
 
-        public BookingController(IRepository<BookingModel> repo)
+        public BookingController(IBookingRepository repo)
         {
             this.repo = repo;
         }
