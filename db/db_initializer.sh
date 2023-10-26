@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Remember to set the "Format" to LF and not CRLF
+
 # Exits immediately if any errors occur
 set -o errexit
 
@@ -14,14 +16,14 @@ readonly REQUIRED_ENV_VARS=(
 )
 
 #MAIN
-# - verifies all env vars set
-# - runs SQL code to create user and DB
+# - runs SQL code 
 main() {
     echo "running main"
     #check_env_vars_set
     init_user_and_db
     initalize_database_tables
     initalize_database_views
+    initalize_database_stored_procedures
 
     /bin/bash ../x-db_seeder.sh
 }
@@ -57,7 +59,7 @@ EOSQL
 #\connect $APP_DB_NAME $APP_DB_USER
 
 initalize_database_tables(){
-    echo "Running database tables"
+    echo "<----------------    Creating database tables    ---------------->"
     psql -v ON_ERROR_STOP=1 --username "$APP_DB_USER" --dbname "$APP_DB_NAME" <<-EOSQL
     BEGIN;
         CREATE TABLE passengers (
@@ -125,7 +127,7 @@ EOSQL
 }
 
 initalize_database_views(){
-    echo "Creating db views"
+    echo "<----------------    Creating db views    ---------------->"
     initalize_boarding_pass_view
     initalize_booking_view
     initalize_checkin_view
@@ -138,8 +140,12 @@ initalize_boarding_pass_view(){
     BEGIN;
 
     create or replace view vw_boarding_pass
-    AS SELECT checkin_id, passenger_id, flight_id
-    FROM bookings
+    AS SELECT
+        b.checkin_id,
+        b.passenger_id,
+        b.flight_id
+
+    FROM bookings b;
 
     COMMIT;
 EOSQL
@@ -159,9 +165,9 @@ initalize_booking_view(){
 
     FROM bookings book
         inner join passengers p
-            on p.id = book.id
+            on p.id = book.passenger_id
         inner join baggage bag
-            on bag.id = book.id;
+            on bag.booking_id = book.id;
 
     COMMIT;
 EOSQL
@@ -179,7 +185,7 @@ initalize_checkin_view(){
 
     FROM bookings b
         inner join passengers p
-            on p.id = b.id;
+            on p.id = b.passenger_id;
 
     COMMIT;
 EOSQL
@@ -204,6 +210,118 @@ initalize_flight_info_view(){
     FROM flights f
         inner join planes p
             on p.id = f.plane_id;
+
+    COMMIT;
+EOSQL
+}
+
+initalize_database_stored_procedures(){
+    initalize_flight_stored_procedure
+    initalize_booking_stored_procedure
+    initalize_checkin_stored_procedure
+}
+
+# Be careful with the types for the insert statement: uuid and timestamps without timezones
+# CALL "sp_insert_flight_data"('d1227f62-a806-4dd6-922d-9be2611c1fc3'::UUID, 420, 9999, 10, 15, 'a9b78c41-c1e7-4ba6-9f9e-032d578d901d'::UUID, '2012-06-13 09:16:16', '2014-06-13 09:16:16', 'CPH', 'Berlin'::VARCHAR(255))
+initalize_flight_stored_procedure(){
+    echo "Creating flight procedure"
+    psql -v ON_ERROR_STOP=1 --username "$APP_DB_USER" --dbname "$APP_DB_NAME" <<-EOSQL
+    BEGIN;
+
+    create or replace procedure sp_insert_flight_data(
+        plane_id uuid,
+        plane_max_passengers INT,
+        plane_max_baggage_total INT,
+        plane_max_baggage_weight INT,
+        plane_max_baggage_dimension INT,
+        flight_id uuid,
+        flight_arrival_time TIMESTAMP,
+        flight_departure TIMESTAMP,
+        flight_origin VARCHAR(255),
+        flight_destination VARCHAR(255)
+        )
+    language plpgsql
+    as \$\$
+
+    begin
+        INSERT INTO planes
+        VALUES (plane_id, plane_max_passengers, plane_max_baggage_total, plane_max_baggage_weight, plane_max_baggage_dimension);
+
+        INSERT INTO flights
+        VALUES (flight_id, flight_arrival_time, flight_departure, flight_origin, flight_destination, plane_id);
+    end;
+    \$\$; 
+
+    COMMIT;
+EOSQL
+}
+
+initalize_booking_stored_procedure(){
+    echo "Creating booking procedure"
+    psql -v ON_ERROR_STOP=1 --username "$APP_DB_USER" --dbname "$APP_DB_NAME" <<-EOSQL
+    BEGIN;
+
+    create or replace procedure sp_insert_booking_data(
+        email varchar(255),
+        passport_number varchar(255),
+        baggage_weight int,
+        booking_number uuid,
+        baggage_id uuid,
+        flight_id uuid,
+        passenger_id uuid,
+        input_booking_id uuid
+    )
+    language plpgsql
+    as \$\$
+
+    begin
+        IF NOT EXISTS (SELECT * FROM flights WHERE flights.id = flight_id) THEN
+            RETURN;
+        END IF;
+        
+        
+        INSERT INTO passengers (id, name, email, photo, passport_number)
+        VALUES (passenger_id, NULL, email, NULL, passport_number);
+        
+        INSERT INTO bookings(id, created_date, number, checkin_id, passenger_id, flight_id)
+        VALUES (input_booking_id, NOW()::timestamp, booking_number, NULL, passenger_id, flight_id);
+
+        INSERT INTO baggage(id, weight, booking_id)
+        VALUES (baggage_id, baggage_weight, input_booking_id);
+
+    end;
+    \$\$; 
+
+    COMMIT;
+EOSQL
+}
+
+initalize_checkin_stored_procedure(){
+    echo "Creating checkin procedure"
+    psql -v ON_ERROR_STOP=1 --username "$APP_DB_USER" --dbname "$APP_DB_NAME" <<-EOSQL
+    BEGIN;
+
+    create or replace procedure sp_checkin_passenger(
+        booking_number uuid,
+        input_checkin_id uuid
+    )
+    language plpgsql
+    as \$\$
+
+    begin
+        IF NOT EXISTS (SELECT * FROM bookings WHERE bookings.number = booking_number) THEN
+            RETURN;
+        END IF;
+
+        INSERT INTO checkins (id, is_checked_in)
+        VALUES (input_checkin_id, '1');	
+
+        UPDATE bookings
+        SET checkin_id = input_checkin_id
+        WHERE number = booking_number;
+
+    end;
+    \$\$; 
 
     COMMIT;
 EOSQL
