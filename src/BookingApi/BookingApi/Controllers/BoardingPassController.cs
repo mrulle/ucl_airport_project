@@ -1,6 +1,7 @@
 using BookingApi.Persistance;
 using Microsoft.AspNetCore.Mvc;
 using BookingApi.Models;
+using BookingApi.RabbitMQ;
 
 namespace BookingApi.Controllers
 {
@@ -10,7 +11,7 @@ namespace BookingApi.Controllers
     {
         private readonly IBoardingPassRepository repo;
 
-        public BoardingPassController(IBoardingPassRepository repo)
+        public BoardingPassController(IBoardingPassRepository repo, RabbitMQChannel channel)
         {
             this.repo = repo;
         }
