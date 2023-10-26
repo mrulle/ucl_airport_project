@@ -1,6 +1,7 @@
 
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using BookingApi.Persistance;
+using BookingApi.RabbitMQ;
 
 namespace BookingApi
 {
@@ -22,6 +23,8 @@ namespace BookingApi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddSingleton<RabbitMQConnection>();
+            builder.Services.AddSingleton<RabbitMQChannel>();
             if (environment == "Development")
             {
                 builder.Services.AddSingleton<IBoardingPassRepository, DevBoardingPassRepository>();
