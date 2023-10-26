@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Connections;
+﻿using BookingApi.Persistance;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 
@@ -12,7 +13,7 @@ namespace BookingApi.RabbitMQ
         private int _rabbitmqPort;
         private ConnectionFactory? _factory;
         private IConnection _connection;
-
+        private IFlightInfoRepository flightrepo;
         private IModel channel;
         private bool isConnected;
 
@@ -27,6 +28,7 @@ namespace BookingApi.RabbitMQ
                                                  RequestedHeartbeat = TimeSpan.FromSeconds(16)
             };
 
+            
         }
 
         private IConnection CreateConnection()
