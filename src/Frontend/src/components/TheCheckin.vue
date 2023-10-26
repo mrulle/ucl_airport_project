@@ -35,6 +35,7 @@ export default {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
+                    checkinId: '',
                     email: this.email,
                     bookingId: this.bookingId,
                 })
@@ -42,7 +43,9 @@ export default {
             .then( (response) => {
                 console.log(response);
                 alert('Check-In success!');
-            });
+                // Fetch boarding pass here
+            })
+            .catch((error) => {alert(error)});
         }
     }
 }

@@ -75,7 +75,8 @@ export default {
             .then((response) => response.json())
             .then((response => {
                 alert('Booking success! Your booking id is: ' + response.bookingId);
-            }));
+            }))
+            .catch((error) => alert(error));
         }
     }
 }

@@ -14,16 +14,16 @@ public class DevBookingRepository : IBookingRepository
 
     public string Add(BookingModel item)
     {
-        if (String.IsNullOrEmpty(item.BookingId))
-            item.BookingId = Guid.NewGuid().ToString();
+        if (String.IsNullOrEmpty(item.BookingNumber))
+            item.BookingNumber = Guid.NewGuid().ToString();
 
         _bookingModels.Add(item);
-        return item.BookingId;
+        return item.BookingNumber;
     }
 
     public bool Delete(string id)
     {
-        var item = _bookingModels.Where(x => x.BookingId == id) 
+        var item = _bookingModels.Where(x => x.BookingNumber == id) 
             ?? throw new NullReferenceException($"No flight info found with the id: {id}");
 
         if (!item.Any())
@@ -42,7 +42,7 @@ public class DevBookingRepository : IBookingRepository
 
     public BookingModel GetById(string id)
     {
-        var item = _bookingModels.Where(x => x.BookingId == id) 
+        var item = _bookingModels.Where(x => x.BookingNumber == id) 
             ?? throw new KeyNotFoundException($"item not found {id}");
 
         if (!item.Any())
@@ -56,14 +56,14 @@ public class DevBookingRepository : IBookingRepository
 
     public string Update(BookingModel item)
     {
-        var itemToUpdate = _bookingModels.Where(x => x.BookingId == item.BookingId) 
-            ?? throw new KeyNotFoundException($"item not found {item.BookingId}");
+        var itemToUpdate = _bookingModels.Where(x => x.BookingNumber == item.BookingNumber) 
+            ?? throw new KeyNotFoundException($"item not found {item.BookingNumber}");
 
         if (!itemToUpdate.Any())
-            throw new Exception($"No item was found with the id: {item.BookingId}");
+            throw new Exception($"No item was found with the id: {item.BookingNumber}");
 
         _bookingModels.Remove(itemToUpdate.ElementAt(0));
         _bookingModels.Add(item);
-        return item.BookingId;
+        return item.BookingNumber;
     }
 }
