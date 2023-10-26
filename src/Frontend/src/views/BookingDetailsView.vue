@@ -40,8 +40,12 @@ export default {
         }
     },
     created() {
-        // TODO:
-        // fetch information to populate flightInfo property
+        fetch('http://127.0.0.1:40080/FlightInfo')
+            .then((response => response.json()))
+            .then((response => {
+                this.flightInfo.value = response;
+            }))
+            .catch(error => alert(error));
     }
     ,
     methods: {

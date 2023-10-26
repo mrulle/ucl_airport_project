@@ -12,5 +12,8 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  define: {
+    'import.meta.env.VITE_API_HOST': JSON.stringify(process.env.VITE_API_HOST)
   }
 })
