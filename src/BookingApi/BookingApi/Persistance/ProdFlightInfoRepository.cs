@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using BookingApi.Models;
 using BookingApi.Persistance.DAO;
 using Npgsql;
@@ -18,20 +19,13 @@ public class ProdFlightInfoRepository : IFlightInfoRepository
         var cs = "Host=postgres;Username=postgres;Password=postgres;Database=production";
         using var con = new NpgsqlConnection(cs);
         con.Open();
-        var sql = $"insert into sp_insert_flight_data(plane_id, plane_max_passengers, plane_max_baggage_total, plane_max_baggage_weight, plane_max_baggage_dimension, flight_id, flight_arrival_time, flight_departure, flight_origin, flight_destination) values({item.PlaneId}, {item.PassengersAvailableTotal}, {item.BaggageWeightAvailableTotal}, 4000000, 150, {item.FlightId}, {item.Arrival}, {item.Departure}, {item.Origin}, {item.Destination});";
+        // var sql = $"call sp_insert_flight_data(plane_id, plane_max_passengers, plane_max_baggage_total, plane_max_baggage_weight, plane_max_baggage_dimension, flight_id, flight_arrival_time, flight_departure, flight_origin, flight_destination) values ('{item.PlaneId}', {item.PassengersAvailableTotal}, {item.BaggageWeightAvailableTotal}, 4000000, 150, '{item.FlightId}', '{item.Arrival}', '{item.Departure}', '{item.Origin}', '{item.Destination}');";
+        var sql = $"call sp_insert_flight_data('{item.PlaneId}', {item.PassengersAvailableTotal}, {item.BaggageWeightAvailableTotal}, 400000, 150, '{item.FlightId}', '{item.Arrival}', '{item.Departure}', '{item.Origin}', '{item.Destination}');";
+        Console.WriteLine($"attempting this statement:\n{sql}");
         using var cmd = new NpgsqlCommand(sql, con);
-        using var reader = cmd.ExecuteReader();
-        List<FlightInfoModel> flights = new List<FlightInfoModel>();
-        int rowCounter = 0;
-        while (reader.Read())
-        {
-            rowCounter += 1;
-            var flightInfo = Map(reader);
-            flights.Add(flightInfo);
-        }
-        Console.WriteLine($"{rowCounter} results:\n{reader}");
+        var rowsAffected = cmd.ExecuteNonQuery();
         con.Close();
-        return "flights";
+        return $"{item.FlightId}";
     }
 
     public bool Delete(string id)
@@ -63,6 +57,7 @@ public class ProdFlightInfoRepository : IFlightInfoRepository
     {
         var cs = "Host=postgres;Username=postgres;Password=postgres;Database=production";
         using var con = new NpgsqlConnection(cs);
+        con.Open();
         var sql = $"select * from vw_flight_info where flight_id='{id}';";
         Console.WriteLine($"executing statement:\n{sql}");
         using var cmd = new NpgsqlCommand(sql, con);
@@ -73,8 +68,10 @@ public class ProdFlightInfoRepository : IFlightInfoRepository
             flightList.Add(flightInfo);
         }
         Console.WriteLine($"found {flightList.Count()} results");
+        con.Close();
         if (flightList.Count() == 1){
             return flightList[0];
+
         }
         throw new Exception("multiple rows with same id");
     }
@@ -90,7 +87,7 @@ public class ProdFlightInfoRepository : IFlightInfoRepository
         model.Departure = DateTime.Parse(reader["departure"].ToString());
         model.Origin = reader["origin"].ToString();
         model.Destination = reader["destination"].ToString();
-        model.PlaneId = reader["destination"].ToString();
+        model.PlaneId = reader["plane_id"].ToString();
         model.FlightId = reader["flight_id"].ToString();
         model.PassengersAvailableTotal = int.Parse(reader["max_passengers"].ToString());
         model.BaggageWeightAvailableTotal = int.Parse(reader["max_baggage_weight"].ToString());
