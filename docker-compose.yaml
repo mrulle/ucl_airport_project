@@ -27,16 +27,16 @@ services:
     depends_on:
       - rabbitmq
 
-  enricher:
-    container_name: enricher
-    restart: on-failure
-    build:
-      context: ./src/contentenricher
-      dockerfile: Dockerfile
-    volumes:
-      - enricher:/src
-    depends_on:
-      - rabbitmq
+  # enricher:
+  #   container_name: enricher
+  #   restart: on-failure
+  #   build:
+  #     context: ./src/contentenricher
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - enricher:/src
+  #   depends_on:
+  #     - rabbitmq
 
   postgres:
     container_name: postgres

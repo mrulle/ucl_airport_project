@@ -1,6 +1,8 @@
 
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using BookingApi.Persistance;
+using Microsoft.EntityFrameworkCore;
+using BookingApi.Persistance.DAO;
 
 namespace BookingApi
 {
@@ -28,6 +30,9 @@ namespace BookingApi
                 builder.Services.AddSingleton<IBookingRepository, DevBookingRepository>();
                 builder.Services.AddSingleton<ICheckinRepository, DevCheckinRepository>();
                 builder.Services.AddSingleton<IFlightInfoRepository, DevFlightInfoRepository>();
+            }else {
+                builder.Services.AddScoped<IFlightInfoRepository, ProdFlightInfoRepository>();
+                builder.Services.AddDbContext<EF_DataContext> (o => o.UseNpgsql(builder.Configuration.GetConnectionString("Postgres_db")));
             }
                 var app = builder.Build();
 
@@ -39,6 +44,7 @@ namespace BookingApi
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
 
             app.UseHttpsRedirection();
 
