@@ -15,28 +15,31 @@ services:
     container_name: bookingapi
     restart: on-failure
     build:
-      context: ./src/bookingapi
+      context: ./src/BookingApi
       dockerfile: Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=${Environment}
       - ASPNETCORE_URLS=http://+:80
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=${RabbitMQServerPort}
+      - RABBITMQ_DEFAULT_EXCHANGE=${RabbitMQDefaultExchange}
+      - RABBITMQ_DEFAULT_QUEUENAME=${RabbitMQDefaultQueueName}
+      - RABBITMQ_DEFAULT_ROUTINGKEY=${RabbitMQDefaultRoutingKey}
     volumes:
       - bookingapi:/src
     ports:
     - "${bookingapi_OutPORT}:${bookingapi_PORT}"
+
+  enricher:
+    container_name: enricher
+    restart: on-failure
+    build:
+      context: ./src/ContentEnricher
+      dockerfile: Dockerfile
+    volumes:
+      - enricher:/src
     depends_on:
       - rabbitmq
-
-  # enricher:
-  #   container_name: enricher
-  #   restart: on-failure
-  #   build:
-  #     context: ./src/contentenricher
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - enricher:/src
-  #   depends_on:
-  #     - rabbitmq
 
   postgres:
     container_name: postgres
@@ -70,7 +73,9 @@ services:
       context: ./src/Frontend
       dockerfile: Dockerfile
     ports:
-     - 5002:80
+      - "${frontend_outPORT}:80"
+    environment:
+      - API_HOST="http://127.0.0.1:5012"
 
 volumes:
   bookingapi:

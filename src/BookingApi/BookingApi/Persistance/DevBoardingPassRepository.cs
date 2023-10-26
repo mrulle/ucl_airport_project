@@ -26,6 +26,9 @@ public class DevBoardingPassRepository : IBoardingPassRepository
         var item = _boardingPasses.Where(x => x.CheckinId == id) 
             ?? throw new NullReferenceException($"No boarding pass found with the id: {id}");
 
+        if (!item.Any())
+            throw new Exception($"No item was found with the id: {id}");
+
         if (item.Count() > 1) 
             throw new Exception($"More than one boarding pass was found with the id: {id}");
 
@@ -42,6 +45,9 @@ public class DevBoardingPassRepository : IBoardingPassRepository
         var item = _boardingPasses.Where(x => x.CheckinId == id) 
             ?? throw new KeyNotFoundException($"item not found {id}");
 
+        if (!item.Any())
+            throw new Exception($"No item was found with the id: {id}");
+
         if (item.Count() > 1) 
             throw new Exception($"More than one boarding pass was found with the id: {id}");
 
@@ -50,7 +56,15 @@ public class DevBoardingPassRepository : IBoardingPassRepository
 
     public string Update(BoardingPassModel item)
     {
-        throw new NotImplementedException();
+        var itemToUpdate = _boardingPasses.Where(x => x.CheckinId == item.CheckinId) 
+            ?? throw new KeyNotFoundException($"item not found {item.CheckinId}");
+
+        if (!itemToUpdate.Any())
+            throw new Exception($"No item was found with the id: {item.CheckinId}");
+
+        _boardingPasses.Remove(itemToUpdate.ElementAt(0));
+        _boardingPasses.Add(item);
+        return item.FlightId;
     }
 }
 

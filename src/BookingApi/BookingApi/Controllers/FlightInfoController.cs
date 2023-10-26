@@ -16,25 +16,32 @@ namespace BookingApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll() 
-        {
-            var result = repo.GetAll();
-            return Ok(result);
+        public IActionResult GetAll() {
+            return Ok(repo.GetAll());
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(string id)
-        {
-            var result = repo.GetById(id);
-            return Ok(result);
+        public IActionResult Get(string id) {
+            return Ok(repo.GetById(id));
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] FlightInfoModel flightInfoModel) {
-            // TODO: return a createdAt timestamp thingy
-            var result = repo.Add(flightInfoModel);
+        public IActionResult Post([FromBody] FlightInfoModel model)
+        {
+            string generatedId = repo.Add(model);
+            return CreatedAtAction(nameof(Get), new { id = generatedId }, model);
+        }
 
-            return CreatedAtAction(nameof(GetById), new { id = result }, flightInfoModel);
+        [HttpDelete("{id}")]
+        public IActionResult Delete(string id) {
+            bool success = repo.Delete(id);
+            return NoContent();
+        }
+
+        [HttpPut]
+        public IActionResult Update([FromBody] FlightInfoModel model) {
+            string updatedId = repo.Update(model);
+            return CreatedAtAction(nameof(Get), new { id = updatedId }, model);
         }
     }
 

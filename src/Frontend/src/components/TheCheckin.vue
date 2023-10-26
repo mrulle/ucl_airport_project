@@ -1,7 +1,9 @@
 <template>
     <div class="checkin">
-        <h1>Checkin</h1>
-        <RouterLink to="/">Go Back</RouterLink>
+        <h1 style="color: hsla(160, 100%, 37%, 1);">Check-In</h1>
+        <div class="routerLink">
+            <RouterLink to="/">Go Back</RouterLink>
+        </div>
         <div class="checkinDetails">
             <form @submit.prevent="handleSubmit">
                 <label>Email:</label>
@@ -26,27 +28,22 @@ export default {
     },
     methods: {
         handleSubmit() {
-            // TODO:
-            // fetch-api with post request to booking api
-            // containing information from the form
-            alert('FORM SUBMITTED!');
+            fetch("http://127.0.0.1:40080/Checkin", {
+                method: "post",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: this.email,
+                    bookingId: this.bookingId,
+                })
+            })
+            .then( (response) => {
+                console.log(response);
+                alert('Check-In success!');
+            });
         }
     }
 }
 </script>
-
-<style scoped>
-.checkinDetails {
-    display:grid;
-}
-.checkin {
-    min-height: 50vh;
-    display: flex;
-    align-items: center;
-}
-h1 {
-  color: deeppink;
-  font-weight: bold;
-  font-size: xx-large;
-}
-</style>
