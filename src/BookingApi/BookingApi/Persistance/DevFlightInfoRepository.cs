@@ -56,7 +56,7 @@ public class DevFlightInfoRepository: IFlightInfoRepository {
 
     public List<FlightInfoModel> GetPaged(int page, int take = 10)
     {
-        return _flightInfoList.Skip(page * take).ToList();
+        return _flightInfoList.Skip(page * take).Take(take).ToList();
     }
 
     public string Update(FlightInfoModel item)

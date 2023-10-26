@@ -76,6 +76,11 @@ public class ProdFlightInfoRepository : IFlightInfoRepository
         throw new Exception("multiple rows with same id");
     }
 
+    public List<FlightInfoModel> GetPaged(int page, int take = 10)
+    {
+        return GetAll().Skip(page * take).Take(take).ToList();
+    }
+
     public string Update(FlightInfoModel item)
     {
         throw new NotImplementedException();
