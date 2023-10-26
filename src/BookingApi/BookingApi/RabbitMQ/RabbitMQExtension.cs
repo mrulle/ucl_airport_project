@@ -21,9 +21,6 @@ namespace BookingApi.RabbitMQ
             var defaultExchange = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_EXCHANGE") ?? "FlightJourney";
             var defaultQueueName = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_QUEUENAME") ?? "Booking";
             var defaultRoutingKey = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_ROUTINGKEY") ?? "BookingPlaneAndFlight";
-            Debug.WriteLine(defaultExchange);
-            Debug.WriteLine(defaultQueueName);
-            Debug.WriteLine(defaultRoutingKey);
             channel.CreateExchange(defaultExchange, ExchangeType.Topic);
             channel.CreateQueue(defaultQueueName);
             Thread.Sleep(1000);
