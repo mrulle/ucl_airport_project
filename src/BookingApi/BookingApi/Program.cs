@@ -49,7 +49,7 @@ namespace BookingApi
             });
 
             var app = builder.Build();
-
+            // app.UseRabbit();
             // Configure the HTTP request pipeline.
             // NOTE: Add implementation of PROD Repository
             if (app.Environment.IsDevelopment())
@@ -63,7 +63,6 @@ namespace BookingApi
             app.UseHttpsRedirection();
 
             app.UseCors();
-
             app.UseAuthorization();
 
             app.MapControllers();

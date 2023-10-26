@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Connections;
+﻿using BookingApi.Persistance;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 
@@ -12,21 +13,22 @@ namespace BookingApi.RabbitMQ
         private int _rabbitmqPort;
         private ConnectionFactory? _factory;
         private IConnection _connection;
-
+        private IFlightInfoRepository flightrepo;
         private IModel channel;
         private bool isConnected;
 
         public RabbitMQConnection()
         {
-            _rabbitmqPort = int.Parse(Environment.GetEnvironmentVariable("RABBITMQ_PORT")) == 0 ? 5672 
-                                            : int.Parse(Environment.GetEnvironmentVariable("RABBITMQ_PORT"));      
-            
+            //_rabbitmqPort = (int.Parse(Environment.GetEnvironmentVariable("RABBITMQ_PORT")) == 0) ? 5672 
+            //                                : int.Parse(Environment.GetEnvironmentVariable("RABBITMQ_PORT"));      
 
+            _rabbitmqPort = 5672;
             _factory = new ConnectionFactory {  HostName = _host,
                                                 Port = _rabbitmqPort,
                                                  RequestedHeartbeat = TimeSpan.FromSeconds(16)
             };
 
+            
         }
 
         private IConnection CreateConnection()
