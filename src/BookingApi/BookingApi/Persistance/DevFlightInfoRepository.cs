@@ -54,6 +54,11 @@ public class DevFlightInfoRepository: IFlightInfoRepository {
         return item.ElementAt(0);
     }
 
+    public List<FlightInfoModel> GetPaged(int page, int take = 10)
+    {
+        return _flightInfoList.Skip(page * take).ToList();
+    }
+
     public string Update(FlightInfoModel item)
     {
         var itemToUpdate = _flightInfoList.Where(x => x.FlightId == item.FlightId) 
