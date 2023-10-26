@@ -102,38 +102,25 @@ seed_database_tables(){
         random_plane_id="${plane_ids[$RANDOM % ${#plane_ids[@]}]}"  # Random plane id
 
         seed_flights "$random_flight_id" "$random_arrival_time" "$random_departure" "$random_origin" "$random_destination" "$random_plane_id"
-    done
-
-    # Seed checkins
-    for i in {1..149}; do
-        random_checkin_id="${checkin_ids[$i]}" # Random checkin id of length 28
-        random_is_checked_in=$((RANDOM % 2))  # Random boolean value
-        if [ "$random_is_checked_in" = 1 ]; then
-            random_is_checked_in="true"
-        else
-            random_is_checked_in="false"
-        fi
-        seed_checkins "$random_checkin_id" "$random_is_checked_in"
-    done
+    done    
 
     # seed_bookings
     echo "Seeding Bookings"
     for i in {1..149}; do
         random_booking_id="${booking_ids[$i]}"  # Random booking id of length 28
         random_created_date=$(date +'%Y-%m-%d %H:%M:%S')  # Random created date
-        random_number=$(random_uuid)  # Random number of length 28
-        random_checkin_id="${checkin_ids[$i]}"  
         random_passenger_id="${passengers_ids[$i]}"  # Random passenger id
         random_flight_id="${flight_ids[$i]}"  # Random flight id
     
-        # Randomly decide whether to insert a checkin id or NULL
-        if (($RANDOM % 2)); then
-            random_checkin_id="d"
-        fi
-    
-        seed_bookings "$random_booking_id" "$random_created_date" "$random_number" "$random_checkin_id" "$random_passenger_id" "$random_flight_id"
+        seed_bookings "$random_booking_id" "$random_created_date" "$random_passenger_id" "$random_flight_id"
     done
 
+    # Seed checkins
+    for i in {1..149}; do
+        random_booking_id="${booking_ids[$i]}"  # Random booking id of length 28
+        random_checkin_id="${checkin_ids[$i]}" # Random checkin id of length 28
+        seed_checkins "$random_checkin_id" "$random_booking_id"
+    done
 
     # seed_bagage
     for booking_id in "${!booking_ids[@]}"; do
@@ -148,8 +135,6 @@ seed_database_tables(){
         done
     done
 }
-
-
 
 seed_planes(){
     echo "Seeding Planes"
@@ -178,8 +163,8 @@ seed_checkins(){
     echo "Seeding Checkins"
     psql -v ON_ERROR_STOP=1 --username "$APP_DB_USER" --dbname "$APP_DB_NAME" <<-EOSQL
     BEGIN;
-    INSERT INTO checkins (id, is_checked_in)
-    VALUES ('$1', '$2');	
+    INSERT INTO checkins (id, booking_id)
+    VALUES ('$1', '$2');
 
     COMMIT;
 EOSQL
@@ -199,23 +184,12 @@ EOSQL
 
 seed_bookings(){
     echo "Seeding Bookings"
-    if [ "$4" == 'd' ]; then
-        psql -v ON_ERROR_STOP=1 --username "$APP_DB_USER" --dbname "$APP_DB_NAME" <<-EOSQL
-        BEGIN;
-        INSERT INTO bookings (id, created_date, number, checkin_id, passenger_id, flight_id)
-        VALUES ('$1', '$2', '$3', NULL, '$5', '$6');	
-        COMMIT;
+    psql -v ON_ERROR_STOP=1 --username "$APP_DB_USER" --dbname "$APP_DB_NAME" <<-EOSQL
+    BEGIN;
+        INSERT INTO bookings (id, created_date, passenger_id, flight_id)
+        VALUES ('$1', '$2', '$3', '$4');	
+    COMMIT;
 EOSQL
-           
-    else
-        psql -v ON_ERROR_STOP=1 --username "$APP_DB_USER" --dbname "$APP_DB_NAME" <<-EOSQL
-        BEGIN;
-        INSERT INTO bookings (id, created_date, number, checkin_id, passenger_id, flight_id)
-        VALUES ('$1', '$2', '$3', '$4', '$5', '$6');	
-        COMMIT;
-EOSQL
-    fi
-
 }
 
 seed_baggage(){

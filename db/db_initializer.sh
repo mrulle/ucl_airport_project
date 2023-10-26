@@ -88,29 +88,27 @@ initalize_database_tables(){
             CONSTRAINT fk_flights_planes
                 FOREIGN KEY(plane_id)
                     REFERENCES planes(id)
-        );
-
-        CREATE TABLE checkins (
-            id uuid PRIMARY KEY,
-            is_checked_in BOOLEAN
-        );
+        );        
 
         CREATE TABLE bookings (
             id uuid PRIMARY KEY,
             created_date TIMESTAMP,
-            number uuid,
-            checkin_id uuid,
             passenger_id uuid,
             flight_id uuid,
-            CONSTRAINT fk_bookings_checkins
-                FOREIGN KEY(checkin_id)
-                    REFERENCES checkins(id),
             CONSTRAINT fk_bookings_passengers
                 FOREIGN KEY(passenger_id)
                     REFERENCES passengers(id),
             CONSTRAINT fk_bookings_flight
                 FOREIGN KEY(flight_id)
                     REFERENCES flights(id)
+        );
+
+        CREATE TABLE checkins (
+            id uuid PRIMARY KEY,
+            booking_id uuid,
+            CONSTRAINT fk_checkins_bookings
+                FOREIGN KEY(booking_id)
+                    REFERENCES bookings(id)
         );
 
         CREATE TABLE baggage (
@@ -141,11 +139,13 @@ initalize_boarding_pass_view(){
 
     create or replace view vw_boarding_pass
     AS SELECT
-        b.checkin_id,
+        c.id as checkin_id,
         b.passenger_id,
         b.flight_id
 
-    FROM bookings b;
+    FROM bookings b
+        inner join checkins c
+            on b.id = c.booking_id;
 
     COMMIT;
 EOSQL
@@ -180,12 +180,14 @@ initalize_checkin_view(){
 
     create or replace view vw_checkin
     AS SELECT
-        b.id,
+        c.id as checkin_id,
         p.email
 
     FROM bookings b
         inner join passengers p
-            on p.id = b.passenger_id;
+            on p.id = b.passenger_id
+        inner join checkins c
+            on b.id = c.booking_id;
 
     COMMIT;
 EOSQL
@@ -265,7 +267,6 @@ initalize_booking_stored_procedure(){
         email varchar(255),
         passport_number varchar(255),
         baggage_weight int,
-        booking_number uuid,
         baggage_id uuid,
         flight_id uuid,
         passenger_id uuid,
@@ -277,14 +278,13 @@ initalize_booking_stored_procedure(){
     begin
         IF NOT EXISTS (SELECT * FROM flights WHERE flights.id = flight_id) THEN
             RETURN;
-        END IF;
-        
+        END IF;        
         
         INSERT INTO passengers (id, name, email, photo, passport_number)
         VALUES (passenger_id, NULL, email, NULL, passport_number);
         
-        INSERT INTO bookings(id, created_date, number, checkin_id, passenger_id, flight_id)
-        VALUES (input_booking_id, NOW()::timestamp, booking_number, NULL, passenger_id, flight_id);
+        INSERT INTO bookings(id, created_date, passenger_id, flight_id)
+        VALUES (input_booking_id, NOW()::timestamp, passenger_id, flight_id);
 
         INSERT INTO baggage(id, weight, booking_id)
         VALUES (baggage_id, baggage_weight, input_booking_id);
@@ -302,23 +302,20 @@ initalize_checkin_stored_procedure(){
     BEGIN;
 
     create or replace procedure sp_checkin_passenger(
-        booking_number uuid,
-        input_checkin_id uuid
+        input_checkin_id uuid,
+        input_booking_id uuid
     )
     language plpgsql
-    as \$\$
+    as \$\$  
 
     begin
-        IF NOT EXISTS (SELECT * FROM bookings WHERE bookings.number = booking_number) THEN
+
+        IF EXISTS (SELECT * FROM checkins WHERE checkins.booking_id = input_booking_id) THEN
             RETURN;
         END IF;
 
-        INSERT INTO checkins (id, is_checked_in)
-        VALUES (input_checkin_id, '1');	
-
-        UPDATE bookings
-        SET checkin_id = input_checkin_id
-        WHERE number = booking_number;
+        INSERT INTO checkins (id, booking_id)
+        VALUES (input_checkin_id, input_booking_id);
 
     end;
     \$\$; 

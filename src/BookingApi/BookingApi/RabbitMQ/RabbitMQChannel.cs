@@ -1,6 +1,8 @@
 ﻿
 
 using BookingApi.Models;
+using BookingApi.Persistance;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -20,12 +22,14 @@ namespace BookingApi.RabbitMQ
         private string _defaultExchange = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_EXCHANGE") ?? "FlightJourney";
         private string _defaultQueueName = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_QUEUENAME") ?? "Booking";
         private string _defaultRoutingKey = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_ROUTINGKEY") ?? "BookingPlaneAndFlight";
+        private IFlightInfoRepository flightrepo;
 
-        public RabbitMQChannel(RabbitMQConnection connection)
+        public RabbitMQChannel(RabbitMQConnection connection, IFlightInfoRepository flightInfo)
         {
             var channel = connection.CreateChannel().Result;
             this._channel = channel;
             CreateDefaultDeadLetterQueue();
+            flightrepo = flightInfo;
         }
 
         public void CreateExchange(string exchangeName, string type = "")
@@ -104,15 +108,35 @@ namespace BookingApi.RabbitMQ
             consumer.Received += (model, ea) =>
             {
                 var body = Encoding.UTF8.GetString(ea.Body.ToArray());
-                var msg = JsonConvert.DeserializeObject<FlightInfoModel>(body);
-                // TODO:: Save the data 
+                var flight = JsonConvert.DeserializeObject<FlightInfoModel>(body);
+                if(flight != null)
+                {
+                    flightrepo.Add(flight);
+                }
             };
 
             _channel.BasicConsume(
                 queue: name,
                 autoAck: true,
                 consumer: consumer);
+        }
 
+
+
+        public void PublishMessagesToExchange(string exchangeName, object msg, 
+                                              string routingKey = "", 
+                                              IBasicProperties properties = null, 
+                                              string exchangeType = ExchangeType.Topic)
+        {
+
+            
+            var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(msg));
+            CreateExchange(exchangeName, exchangeType);
+            _channel.BasicPublish(exchange: exchangeName,
+                                   routingKey: routingKey,
+                                   mandatory: false,
+                                   basicProperties: properties,
+                                   body: body);
         }
     }
 }
