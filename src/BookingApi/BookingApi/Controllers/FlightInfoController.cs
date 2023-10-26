@@ -20,6 +20,11 @@ namespace BookingApi.Controllers
             return Ok(repo.GetAll());
         }
 
+        [HttpGet("paged/{page}")]
+        public IActionResult GetPaged(int page) {
+            return Ok(repo.GetPaged(page));
+        }
+
         [HttpGet("{id}")]
         public IActionResult Get(string id) {
             return Ok(repo.GetById(id));

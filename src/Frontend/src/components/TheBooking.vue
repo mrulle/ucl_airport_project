@@ -3,6 +3,17 @@
   <div class="flightHeader">
     <h1 style="color: hsla(160, 100%, 37%, 1);">Available Flights</h1>
   </div>
+  <div class="pagination">
+    <div class="pageButton">
+      <a @click="prevPage">Previous Page</a>
+    </div>
+    <div class="pageDisplay">
+      <span>Page: {{ this.page }}</span>
+    </div>
+    <div class="pageButton">
+      <a @click="nextPage">Next Page</a>
+    </div>
+  </div>
   <li v-for="(flight, index) in flights" v-bind:key="index">
     <div class="bookingItem">
       <div class="flightHeader">
@@ -27,11 +38,43 @@
 export default {
   data() {
     return {
-      flights: []
+      flights: [],
+      page: 0
     }
   },
+  methods: {
+    prevPage() {
+      if (this.page - 1 < 0) {
+        return;
+      }
+      this.page -= 1;
+      fetch(`http://127.0.0.1:40080/FlightInfo/paged/${this.page}`)
+        .then((response) => response.json())
+        .then((response) => {
+          // Only accept a maximum of 10 elements
+          if (response.length > 10) {
+            for (let i = 0; i < response.length; i++) {
+              const e = response[i];
+              this.flights.push(e);
+            }
+          }
+          this.flights = response;
+        })
+        .catch((error) => alert(error));
+    },
+    nextPage() {
+      this.page += 1;
+      fetch(`http://127.0.0.1:40080/FlightInfo/paged/${this.page}`)
+        .then((response) => response.json())
+        .then((response) => {
+          this.flights = response;
+        })
+        .catch((error) => alert(error));
+    }
+  }
+  ,
   created() {
-    fetch('http://127.0.0.1:40080/FlightInfo')
+    fetch(`http://127.0.0.1:40080/FlightInfo/paged/${this.page}`)
       .then((response) => response.json())
       .then((response) => {
         this.flights = response;
@@ -76,5 +119,22 @@ p {
 }
 .flightSpan {
   color: hsla(160, 100%, 37%, 1);
+}
+.pagination {
+  color: hsla(160, 100%, 37%, 1);
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: flex;
+  font-size: 1.2em;
+  justify-content: space-between;
+  padding: 10px;
+}
+.pageButton {
+  background-color: whitesmoke;
+  border-radius: 5px;
+}
+.pageDisplay {
+  color: grey;
 }
 </style>
