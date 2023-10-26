@@ -5,10 +5,16 @@ namespace BookingApi.Persistance;
 
 public class DevBookingRepository : IBookingRepository
 {
-    List<BookingModel> bookingModels = new List<BookingModel>();
+    private readonly List<BookingModel> _bookingModels;
+
+    public DevBookingRepository()
+    {
+        _bookingModels = new();
+    }
+
     public string Add(BookingModel item)
     {
-        bookingModels.Add(item);
+        _bookingModels.Add(item);
         return item.BookingId;
     }
 
@@ -19,17 +25,18 @@ public class DevBookingRepository : IBookingRepository
 
     public List<BookingModel> GetAll()
     {
-        throw new NotImplementedException();
+        return _bookingModels;
     }
 
     public BookingModel GetById(string id)
     {
-        var item = bookingModels.Where(x => x.BookingId == id);
-        if (item is null)
-        {
-            throw new KeyNotFoundException($"item not found {id}");
-        }
-        return (BookingModel)item;
+        var item = _bookingModels.Where(x => x.BookingId == id) 
+            ?? throw new KeyNotFoundException($"item not found {id}");
+
+        if (item.Count() > 1) 
+            throw new Exception($"More than one booking was found with the id: {id}");
+        
+        return item.ElementAt(0);
     }
 
     public string Update(BookingModel item)

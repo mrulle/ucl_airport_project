@@ -17,7 +17,7 @@ namespace BookingApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult Get([FromBody] BookingModel model)
+        public IActionResult Post([FromBody] BookingModel model)
         {
             // implement code for checkin here
             return Ok();

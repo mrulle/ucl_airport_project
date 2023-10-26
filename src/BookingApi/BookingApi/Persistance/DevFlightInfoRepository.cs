@@ -4,55 +4,54 @@ namespace BookingApi.Persistance;
 
 
 public class DevFlightInfoRepository: IFlightInfoRepository {
-    static List<FlightInfoModel> flightInfoList = new List<FlightInfoModel>();
+
+    private readonly List<FlightInfoModel> _flightInfoList;
+
     public DevFlightInfoRepository()
     {
-        
+        _flightInfoList = new();
     }
 
     public string Add(FlightInfoModel item)
     {
-        flightInfoList.Add(item);
+        _flightInfoList.Add(item);
         return item.FlightId;
     }
 
     public bool Delete(string id)
     {
-        var item = flightInfoList.Where(x => x.FlightId == id);
-        if (item is null){
-            return false;
-        }
-        flightInfoList.Remove((FlightInfoModel) item);
-        return true;
+        var item = _flightInfoList.Where(x => x.FlightId == id) 
+            ?? throw new NullReferenceException($"No flight info found with the id: {id}");
+
+        if (item.Count() > 1) 
+            throw new Exception($"More than one flight info was found with the id: {id}");
+
+        return _flightInfoList.Remove(item.ElementAt(0));
     }
 
     public List<FlightInfoModel> GetAll()
     {
-        return flightInfoList;
+        return _flightInfoList;
     }
 
     public FlightInfoModel GetById(string id)
     {
-        var item = flightInfoList.Where(x => x.FlightId == id);
-        if (item is null || item.Count() < 1) {
-            throw new KeyNotFoundException($"item not found {id}");
-        }
-        if (item.Count() > 1) {
-            throw new Exception("too many matching objects");
-        }
-        var result = item.ElementAt(0);
-        return result;
+        var item = _flightInfoList.Where(x => x.FlightId == id) 
+            ?? throw new KeyNotFoundException($"item not found {id}");
+
+        if (item.Count() > 1) 
+            throw new Exception($"More than one flight info was found with the id: {id}");
+
+        return item.ElementAt(0);
     }
 
     public string Update(FlightInfoModel item)
     {
-        var itemToUpdate = flightInfoList.Where(x => x.FlightId == item.FlightId);
-        if (itemToUpdate is null)
-        {
-            throw new KeyNotFoundException($"item not found {item.FlightId}");
-        }
-        flightInfoList.Remove((FlightInfoModel)itemToUpdate);
-        flightInfoList.Add(item);
+        var itemToUpdate = _flightInfoList.Where(x => x.FlightId == item.FlightId) 
+            ?? throw new KeyNotFoundException($"item not found {item.FlightId}");
+
+        _flightInfoList.Remove(itemToUpdate.ElementAt(0));
+        _flightInfoList.Add(item);
         return item.FlightId;
     }
 }

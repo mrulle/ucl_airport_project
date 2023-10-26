@@ -5,31 +5,44 @@ namespace BookingApi.Persistance;
 
 public class DevBoardingPassRepository : IBoardingPassRepository
 {
-    List<BoardingPassModel> boardingPassModels = new List<BoardingPassModel>();
+    private readonly List<BoardingPassModel> _boardingPasses;
+
+    public DevBoardingPassRepository()
+    {
+        _boardingPasses = new();
+    }
+
     public string Add(BoardingPassModel item)
     {
-        boardingPassModels.Add(item);
+        _boardingPasses.Add(item);
         return item.CheckinId;
     }
 
     public bool Delete(string id)
     {
-        throw new NotImplementedException();
+        var item = _boardingPasses.Where(x => x.CheckinId == id) 
+            ?? throw new NullReferenceException($"No boarding pass found with the id: {id}");
+
+        if (item.Count() > 1) 
+            throw new Exception($"More than one boarding pass was found with the id: {id}");
+
+        return _boardingPasses.Remove(item.ElementAt(0));
     }
 
     public List<BoardingPassModel> GetAll()
     {
-        throw new NotImplementedException();
+        return _boardingPasses;
     }
 
     public BoardingPassModel GetById(string id)
     {
-        var item = boardingPassModels.Where(x => x.CheckinId == id);
-        if (item is null)
-        {
-            throw new KeyNotFoundException($"item not found {id}");
-        }
-        return (BoardingPassModel)item;
+        var item = _boardingPasses.Where(x => x.CheckinId == id) 
+            ?? throw new KeyNotFoundException($"item not found {id}");
+
+        if (item.Count() > 1) 
+            throw new Exception($"More than one boarding pass was found with the id: {id}");
+
+        return item.ElementAt(0);
     }
 
     public string Update(BoardingPassModel item)
