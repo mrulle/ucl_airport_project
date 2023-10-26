@@ -5,8 +5,8 @@
     <p>{{ flight.origin }}</p>
     <p>{{ flight.destination }}</p>
     <p>{{ flight.departure }}</p>
-    <p>{{ flight.duration }}</p>
-    <RouterLink :to="{ name: 'details', params: { flightId: flight.id }}">{{ flight.id }}</RouterLink>
+    <p>{{ flight.arrival }}</p>
+    <RouterLink :to="{ name: 'details', params: { flightId: flight.flightId }}">{{ flight.flightId }}</RouterLink>
   </li>
 </div> 
 </template>
@@ -15,22 +15,16 @@
 export default {
   data() {
     return {
-      flights: 
-      [{
-        origin: 'copenhagen', 
-        destination: 'london', 
-        departure: '06:30', 
-        duration: '1:30',
-        id: '123'
-      },
-      {
-        origin: 'bangkok', 
-        destination: 'krakow', 
-        departure: '18:30', 
-        duration: '6:00',
-        id: '456'
-      }]
+      flights: []
     }
+  },
+  created() {
+    fetch('http://127.0.0.1:40080/FlightInfo')
+      .then((response) => response.json())
+      .then((response) => {
+        this.flights = response;
+      })
+      .catch((error) => alert(error));
   }
 }
 </script>

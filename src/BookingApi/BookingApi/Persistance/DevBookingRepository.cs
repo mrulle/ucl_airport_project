@@ -23,7 +23,16 @@ public class DevBookingRepository : IBookingRepository
 
     public bool Delete(string id)
     {
-        throw new NotImplementedException();
+        var item = _bookingModels.Where(x => x.BookingId == id) 
+            ?? throw new NullReferenceException($"No flight info found with the id: {id}");
+
+        if (!item.Any())
+            throw new Exception($"No item was found with the id: {id}");
+
+        if (item.Count() > 1) 
+            throw new Exception($"More than one flight info was found with the id: {id}");
+
+        return _bookingModels.Remove(item.ElementAt(0));
     }
 
     public List<BookingModel> GetAll()
@@ -36,6 +45,9 @@ public class DevBookingRepository : IBookingRepository
         var item = _bookingModels.Where(x => x.BookingId == id) 
             ?? throw new KeyNotFoundException($"item not found {id}");
 
+        if (!item.Any())
+            throw new Exception($"No item was found with the id: {id}");
+
         if (item.Count() > 1) 
             throw new Exception($"More than one booking was found with the id: {id}");
         
@@ -44,6 +56,14 @@ public class DevBookingRepository : IBookingRepository
 
     public string Update(BookingModel item)
     {
-        throw new NotImplementedException();
+        var itemToUpdate = _bookingModels.Where(x => x.BookingId == item.BookingId) 
+            ?? throw new KeyNotFoundException($"item not found {item.BookingId}");
+
+        if (!itemToUpdate.Any())
+            throw new Exception($"No item was found with the id: {item.BookingId}");
+
+        _bookingModels.Remove(itemToUpdate.ElementAt(0));
+        _bookingModels.Add(item);
+        return item.BookingId;
     }
 }

@@ -16,11 +16,33 @@ namespace BookingApi.Controllers
             this.repo = repo;
         }
 
+        [HttpGet]
+        public IActionResult GetAll() {
+            return Ok(repo.GetAll());
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult Get(string id) {
+            return Ok(repo.GetById(id));
+        }
+
         [HttpPost]
         public IActionResult Post([FromBody] BookingModel model)
         {
-            // implement code for checkin here
-            return Ok();
+            string generatedId = repo.Add(model);
+            return CreatedAtAction(nameof(Get), new { id = generatedId }, model);
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(string id) {
+            bool success = repo.Delete(id);
+            return NoContent();
+        }
+
+        [HttpPut]
+        public IActionResult Update([FromBody] BookingModel model) {
+            string updatedId = repo.Update(model);
+            return CreatedAtAction(nameof(Get), new { id = updatedId }, model);
         }
     }
 

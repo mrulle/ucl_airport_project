@@ -7,16 +7,16 @@
             <p>Origin: {{ flightInfo.origin }}</p>
             <p>Destination: {{ flightInfo.destination }}</p>
             <p>Departure: {{ flightInfo.departure }}</p>
-            <p>Duration: {{ flightInfo.duration }}</p>
+            <p>Arrival: {{ flightInfo.arrival }}</p>
         </div>
         <div class="bookingDetails">
             <form @submit.prevent="handleSubmit">
                 <label>Email:</label>
-                <input type="email">
+                <input type="email" v-model="email">
                 <label>Passport Number</label>
-                <input type="number">
+                <input type="number" v-model="passportNumber">
                 <label>Extra luggage (in kg)</label>
-                <input type="number" step="5" value="0">
+                <input type="number" step="5" v-model="addedLuggage">
                 <p>The luggage's largest dimension may not exceed 150 centimeters.</p>
                 <div class="submit">
                     <button>Book now!</button>
@@ -31,29 +31,49 @@ export default {
     data () {
         return {
             flightInfo: {
-                origin: 'copenhagen',
-                destination: 'krakow',
-                departure: '06:30',
-                duration: '1:30',
-                id: ''
-            }
+                planeId: '',
+                flightId: '',
+                departure: '',
+                arrival: '',
+                origin: '',
+                destination: '',
+                passengersAvailableTotal: 0,
+                baggageWeightAvailableTotal: 0
+            },
+            email: '',
+            passportNumber: 0,
+            addedLuggage: 0,
         }
     },
     created() {
-        fetch('http://127.0.0.1:40080/FlightInfo')
+        let flightId = this.$route.params.flightId;
+        fetch(`http://127.0.0.1:40080/FlightInfo/${flightId}`)
             .then((response => response.json()))
             .then((response => {
-                this.flightInfo.value = response;
+                this.flightInfo = response;
             }))
             .catch(error => alert(error));
     }
     ,
     methods: {
         handleSubmit() {
-            // TODO:
-            // fetch-api with post request to booking api
-            // containing information from the form
-            alert('FORM SUBMITTED!');
+            fetch("http://127.0.0.1:40080/Booking", {
+                method: "post",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: this.email,
+                    bookingId: '',
+                    passportNumber: this.passportNumber,
+                    addedLuggage: this.addedLuggage
+                })
+            })
+            .then((response) => response.json())
+            .then((response => {
+                alert('Booking success! Your booking id is: ' + response.bookingId);
+            }));
         }
     }
 }

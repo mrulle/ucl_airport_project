@@ -26,10 +26,21 @@ export default {
     },
     methods: {
         handleSubmit() {
-            // TODO:
-            // fetch-api with post request to booking api
-            // containing information from the form
-            alert('FORM SUBMITTED!');
+            fetch("http://127.0.0.1:40080/Checkin", {
+                method: "post",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: this.email,
+                    bookingId: this.bookingId,
+                })
+            })
+            .then( (response) => {
+                console.log(response);
+                alert('Check-In success!');
+            });
         }
     }
 }

@@ -5,7 +5,7 @@ import { RouterLink, RouterView } from 'vue-router'
 <template>
   <header>
     <div>
-      <h1>Flight Frontend Application</h1>
+      <h1>Monkey Airlines</h1>
 
       <nav>
         <li>
@@ -21,7 +21,7 @@ import { RouterLink, RouterView } from 'vue-router'
   <RouterView />
 </template>
 
-<style scoped>
+<style>
 h1 {
   color: deeppink;
   font-weight: bold;
@@ -30,5 +30,8 @@ h1 {
 li {
   display: inline;
   margin-right: 10px;
+}
+body {
+  background: lightgray;
 }
 </style>
