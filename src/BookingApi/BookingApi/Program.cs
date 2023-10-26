@@ -1,9 +1,5 @@
-
-using Microsoft.AspNetCore.DataProtection.Repositories;
 using BookingApi.Persistance;
 using BookingApi.RabbitMQ;
-using Microsoft.EntityFrameworkCore;
-using BookingApi.Persistance.DAO;
 
 namespace BookingApi
 {
@@ -33,9 +29,11 @@ namespace BookingApi
                 builder.Services.AddSingleton<IBookingRepository, DevBookingRepository>();
                 builder.Services.AddSingleton<ICheckinRepository, DevCheckinRepository>();
                 builder.Services.AddSingleton<IFlightInfoRepository, DevFlightInfoRepository>();
-            }else {
+            } else {
+                builder.Services.AddScoped<IBoardingPassRepository, ProdBoardingPassRepository>();
+                builder.Services.AddScoped<IBookingRepository, ProdBookingRepository>();
+                builder.Services.AddScoped<ICheckinRepository, ProdCheckinRepository>();
                 builder.Services.AddScoped<IFlightInfoRepository, ProdFlightInfoRepository>();
-                builder.Services.AddDbContext<EF_DataContext> (o => o.UseNpgsql(builder.Configuration.GetConnectionString("Postgres_db")));
             }
 
             builder.Services.AddCors(options => {

@@ -11,12 +11,15 @@ public class ProdBookingRepository : IBookingRepository
         var cs = "Host=postgres;Username=postgres;Password=postgres;Database=production";
         using var con = new NpgsqlConnection(cs);
         con.Open();
-        var sql = $"call sp_insert_booking_data('{item.Email}', {item.PassportNumber}, {item.AddedLuggage}, '{item.BagageId}', '{item.FlightId}', '{item.PassengerId}', '{item.InputBookingId}');";
+        item.BagageId = Guid.NewGuid().ToString();
+        item.PassengerId = Guid.NewGuid().ToString();
+        item.InputBookingId = Guid.NewGuid().ToString();
+        var sql = $"call sp_insert_booking_data('{item.Email}'::VARCHAR(255), '{item.PassportNumber}'::VARCHAR(255), {item.AddedLuggage}, '{item.BagageId}'::UUID, '{item.FlightId}'::UUID, '{item.PassengerId}'::UUID, '{item.InputBookingId}'::UUID);";
         Console.WriteLine($"attempting this statement:\n{sql}");
         using var cmd = new NpgsqlCommand(sql, con);
         var rowsAffected = cmd.ExecuteNonQuery();
         con.Close();
-        return $"{item.InputBookingId}";
+        return item.InputBookingId;
     }
 
     public bool Delete(string id)
