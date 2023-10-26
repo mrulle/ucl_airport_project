@@ -4,15 +4,20 @@ import { RouterLink, RouterView } from 'vue-router'
 
 <template>
   <header>
-    <div>
-      <h1>Monkey Airlines</h1>
+    <div class="headline">
+      <h1 style="color: hsla(160, 100%, 37%, 1);">Monkey Airlines</h1>
+      <img src="./assets/monkey-airlines.jpg" width="256" height="256">
 
       <nav>
         <li>
-          <RouterLink to="/checkin">Check-In</RouterLink>
+          <div class="routerLink main-router">
+            <RouterLink to="/checkin">Check-In</RouterLink>
+          </div>
         </li>
         <li>
-          <RouterLink to="/">Booking</RouterLink>
+          <div class="routerLink main-router">
+            <RouterLink to="/">Booking</RouterLink>
+          </div>
         </li>
       </nav>
     </div>
@@ -22,16 +27,35 @@ import { RouterLink, RouterView } from 'vue-router'
 </template>
 
 <style>
-h1 {
-  color: deeppink;
-  font-weight: bold;
-  font-size: xx-large;
-}
 li {
   display: inline;
   margin-right: 10px;
 }
+#app {
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+  margin-top: 60px;
+}
 body {
-  background: lightgray;
+  margin: 0;
+  background: rgb(225, 223, 223);
+}
+.routerLink {
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: large;
+  padding-top: 10px;
+}
+.headline {
+  padding: 30px;
+  padding-right: 50px;
+  text-align: center;
+  border-radius: 10px;
+}
+.main-router {
+  font-size: x-large;
 }
 </style>

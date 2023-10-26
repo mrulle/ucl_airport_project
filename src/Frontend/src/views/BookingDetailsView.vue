@@ -1,7 +1,9 @@
 <template>
     <div class="details">
-        <h1>Booking Details!</h1>
-        <RouterLink to="/">Go Back</RouterLink>
+        <h1 style="color: hsla(160, 100%, 37%, 1);">Booking Details!</h1>
+        <div class="routerLink">
+            <RouterLink to="/">Go Back</RouterLink>
+        </div>
         <div class="flightDetails">
             <h3>Currently booking for flight:</h3>
             <p>Origin: {{ flightInfo.origin }}</p>
@@ -79,18 +81,41 @@ export default {
 }
 </script>
 
-<style scoped>
-.details {
-    min-height: 50vh;
-    display: flex;
-    align-items: center;
+<style>
+form {
+    max-width: 420px;
+    margin: 30px auto;
+    background-color: white;
+    text-align: left;
+    padding: 40px;
+    border-radius: 10px;
 }
-.bookingDetails {
-    display:grid
-}
-h1 {
-    color: deeppink;
+label {
+    color: #aaa;
+    display: inline-block;
+    margin: 25px 0 15px;
+    font-size: 1em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     font-weight: bold;
-    font-size: xx-large;
+}
+input, select {
+    display: block;
+    padding: 10px, 6px;
+    box-sizing: border-box;
+    border: none;
+    border-bottom: 1px solid #ddd;
+    color: #555;
+}
+button {
+    background: #0b6dff;
+    border: 0;
+    padding: 10px 20px;
+    margin-top: 20px;
+    color: white;
+    border-radius: 20px;
+}
+.submit {
+    text-align: center;
 }
 </style>

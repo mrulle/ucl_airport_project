@@ -1,7 +1,9 @@
 <template>
     <div class="checkin">
-        <h1>Checkin</h1>
-        <RouterLink to="/">Go Back</RouterLink>
+        <h1 style="color: hsla(160, 100%, 37%, 1);">Check-In</h1>
+        <div class="routerLink">
+            <RouterLink to="/">Go Back</RouterLink>
+        </div>
         <div class="checkinDetails">
             <form @submit.prevent="handleSubmit">
                 <label>Email:</label>
@@ -45,19 +47,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-.checkinDetails {
-    display:grid;
-}
-.checkin {
-    min-height: 50vh;
-    display: flex;
-    align-items: center;
-}
-h1 {
-  color: deeppink;
-  font-weight: bold;
-  font-size: xx-large;
-}
-</style>
