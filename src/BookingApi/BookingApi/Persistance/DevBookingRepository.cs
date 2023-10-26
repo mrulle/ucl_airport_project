@@ -14,6 +14,9 @@ public class DevBookingRepository : IBookingRepository
 
     public string Add(BookingModel item)
     {
+        if (String.IsNullOrEmpty(item.BookingId))
+            item.BookingId = Guid.NewGuid().ToString();
+
         _bookingModels.Add(item);
         return item.BookingId;
     }

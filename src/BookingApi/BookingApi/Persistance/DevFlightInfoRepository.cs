@@ -14,6 +14,9 @@ public class DevFlightInfoRepository: IFlightInfoRepository {
 
     public string Add(FlightInfoModel item)
     {
+        if (String.IsNullOrEmpty(item.FlightId))
+            item.FlightId = Guid.NewGuid().ToString();
+
         _flightInfoList.Add(item);
         return item.FlightId;
     }

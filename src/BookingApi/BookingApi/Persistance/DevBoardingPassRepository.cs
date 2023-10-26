@@ -14,6 +14,9 @@ public class DevBoardingPassRepository : IBoardingPassRepository
 
     public string Add(BoardingPassModel item)
     {
+        if (String.IsNullOrEmpty(item.CheckinId))
+            item.CheckinId = Guid.NewGuid().ToString();
+
         _boardingPasses.Add(item);
         return item.CheckinId;
     }

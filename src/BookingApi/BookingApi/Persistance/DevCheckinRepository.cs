@@ -14,6 +14,9 @@ public class DevCheckinRepository : ICheckinRepository
 
     public string Add(CheckinModel item)
     {
+        if (String.IsNullOrEmpty(item.BookingId))
+            item.BookingId = Guid.NewGuid().ToString();
+
         _checkinModels.Add(item);
         return item.BookingId;
     }
