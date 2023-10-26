@@ -20,6 +20,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=${Environment}
       - ASPNETCORE_URLS=http://+:80
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=${RabbitMQServerPort}
+      - RABBITMQ_DEFAULT_EXCHANGE=${RabbitMQDefaultExchange}
+      - RABBITMQ_DEFAULT_QUEUENAME=${RabbitMQDefaultQueueName}
+      - RABBITMQ_DEFAULT_ROUTINGKEY=${RabbitMQDefaultRoutingKey}
     volumes:
       - bookingapi:/src
     ports:
