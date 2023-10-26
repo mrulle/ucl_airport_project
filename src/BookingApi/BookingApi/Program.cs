@@ -32,7 +32,20 @@ namespace BookingApi
                 builder.Services.AddSingleton<ICheckinRepository, DevCheckinRepository>();
                 builder.Services.AddSingleton<IFlightInfoRepository, DevFlightInfoRepository>();
             }
-                var app = builder.Build();
+
+            builder.Services.AddCors(options => {
+                options.AddDefaultPolicy(
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:5012",
+                                "http://localhost",
+                                "http://127.0.0.1")
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                    });
+            });
+
+            var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             // NOTE: Add implementation of PROD Repository
@@ -45,8 +58,9 @@ namespace BookingApi
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseCors();
 
+            app.UseAuthorization();
 
             app.MapControllers();
 

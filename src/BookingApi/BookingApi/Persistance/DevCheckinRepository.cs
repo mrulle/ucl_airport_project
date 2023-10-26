@@ -23,7 +23,16 @@ public class DevCheckinRepository : ICheckinRepository
 
     public bool Delete(string id)
     {
-        throw new NotImplementedException();
+        var item = _checkinModels.Where(x => x.BookingId == id) 
+            ?? throw new NullReferenceException($"No flight info found with the id: {id}");
+
+        if (!item.Any())
+            throw new Exception($"No item was found with the id: {id}");
+
+        if (item.Count() > 1) 
+            throw new Exception($"More than one flight info was found with the id: {id}");
+
+        return _checkinModels.Remove(item.ElementAt(0));
     }
 
     public List<CheckinModel> GetAll()
@@ -36,6 +45,9 @@ public class DevCheckinRepository : ICheckinRepository
         var item = _checkinModels.Where(x => x.BookingId == id) 
             ?? throw new KeyNotFoundException($"item not found {id}");
 
+        if (!item.Any())
+            throw new Exception($"No item was found with the id: {id}");
+
         if (item.Count() > 1) 
             throw new Exception($"More than one booking was found with the id: {id}");
 
@@ -44,6 +56,14 @@ public class DevCheckinRepository : ICheckinRepository
 
     public string Update(CheckinModel item)
     {
-        throw new NotImplementedException();
+        var itemToUpdate = _checkinModels.Where(x => x.BookingId == item.BookingId) 
+            ?? throw new KeyNotFoundException($"item not found {item.BookingId}");
+
+        if (!itemToUpdate.Any())
+            throw new Exception($"No item was found with the id: {item.BookingId}");
+
+        _checkinModels.Remove(itemToUpdate.ElementAt(0));
+        _checkinModels.Add(item);
+        return item.BookingId;
     }
 }

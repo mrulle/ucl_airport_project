@@ -1,22 +1,24 @@
 <template>
     <div class="details">
-        <h1>Booking Details!</h1>
-        <RouterLink to="/">Go Back</RouterLink>
+        <h1 style="color: hsla(160, 100%, 37%, 1);">Booking Details!</h1>
+        <div class="routerLink">
+            <RouterLink to="/">Go Back</RouterLink>
+        </div>
         <div class="flightDetails">
             <h3>Currently booking for flight:</h3>
             <p>Origin: {{ flightInfo.origin }}</p>
             <p>Destination: {{ flightInfo.destination }}</p>
             <p>Departure: {{ flightInfo.departure }}</p>
-            <p>Duration: {{ flightInfo.duration }}</p>
+            <p>Arrival: {{ flightInfo.arrival }}</p>
         </div>
         <div class="bookingDetails">
             <form @submit.prevent="handleSubmit">
                 <label>Email:</label>
-                <input type="email">
+                <input type="email" v-model="email">
                 <label>Passport Number</label>
-                <input type="number">
+                <input type="number" v-model="passportNumber">
                 <label>Extra luggage (in kg)</label>
-                <input type="number" step="5" value="0">
+                <input type="number" step="5" v-model="addedLuggage">
                 <p>The luggage's largest dimension may not exceed 150 centimeters.</p>
                 <div class="submit">
                     <button>Book now!</button>
@@ -31,42 +33,89 @@ export default {
     data () {
         return {
             flightInfo: {
-                origin: 'copenhagen',
-                destination: 'krakow',
-                departure: '06:30',
-                duration: '1:30',
-                id: ''
-            }
+                planeId: '',
+                flightId: '',
+                departure: '',
+                arrival: '',
+                origin: '',
+                destination: '',
+                passengersAvailableTotal: 0,
+                baggageWeightAvailableTotal: 0
+            },
+            email: '',
+            passportNumber: 0,
+            addedLuggage: 0,
         }
     },
     created() {
-        // TODO:
-        // fetch information to populate flightInfo property
+        let flightId = this.$route.params.flightId;
+        fetch(`http://127.0.0.1:40080/FlightInfo/${flightId}`)
+            .then((response => response.json()))
+            .then((response => {
+                this.flightInfo = response;
+            }))
+            .catch(error => alert(error));
     }
     ,
     methods: {
         handleSubmit() {
-            // TODO:
-            // fetch-api with post request to booking api
-            // containing information from the form
-            alert('FORM SUBMITTED!');
+            fetch("http://127.0.0.1:40080/Booking", {
+                method: "post",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: this.email,
+                    bookingId: '',
+                    passportNumber: this.passportNumber,
+                    addedLuggage: this.addedLuggage
+                })
+            })
+            .then((response) => response.json())
+            .then((response => {
+                alert('Booking success! Your booking id is: ' + response.bookingId);
+            }));
         }
     }
 }
 </script>
 
-<style scoped>
-.details {
-    min-height: 50vh;
-    display: flex;
-    align-items: center;
+<style>
+form {
+    max-width: 420px;
+    margin: 30px auto;
+    background-color: white;
+    text-align: left;
+    padding: 40px;
+    border-radius: 10px;
 }
-.bookingDetails {
-    display:grid
-}
-h1 {
-    color: deeppink;
+label {
+    color: #aaa;
+    display: inline-block;
+    margin: 25px 0 15px;
+    font-size: 1em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     font-weight: bold;
-    font-size: xx-large;
+}
+input, select {
+    display: block;
+    padding: 10px, 6px;
+    box-sizing: border-box;
+    border: none;
+    border-bottom: 1px solid #ddd;
+    color: #555;
+}
+button {
+    background: #0b6dff;
+    border: 0;
+    padding: 10px 20px;
+    margin-top: 20px;
+    color: white;
+    border-radius: 20px;
+}
+.submit {
+    text-align: center;
 }
 </style>
