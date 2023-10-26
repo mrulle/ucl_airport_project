@@ -34,7 +34,7 @@ namespace BookingApi
                 builder.Services.AddSingleton<ICheckinRepository, DevCheckinRepository>();
                 builder.Services.AddSingleton<IFlightInfoRepository, DevFlightInfoRepository>();
             }else {
-                builder.Services.AddScoped<IFlightInfoRepository, ProdFlightInfoRepository>();
+               // builder.Services.AddScoped<IFlightInfoRepository, ProdFlightInfoRepository>();
                 builder.Services.AddDbContext<EF_DataContext> (o => o.UseNpgsql(builder.Configuration.GetConnectionString("Postgres_db")));
             }
 
@@ -51,7 +51,7 @@ namespace BookingApi
             });
 
             var app = builder.Build();
-
+            app.UseRabbit();
             // Configure the HTTP request pipeline.
             // NOTE: Add implementation of PROD Repository
             if (app.Environment.IsDevelopment())
@@ -65,7 +65,6 @@ namespace BookingApi
             app.UseHttpsRedirection();
 
             app.UseCors();
-
             app.UseAuthorization();
 
             app.MapControllers();
