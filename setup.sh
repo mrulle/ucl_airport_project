@@ -1,7 +1,6 @@
 #!/bin/bash 
 docker compose down
-docker build -f ./src/BookingApi/Dockerfile -t bookingapi ./src/bookingapi/
-docker build -f ./src/ContentEnricher/Dockerfile -t contentenricher  ./src/contentenricher/
+docker build -f ./src/BookingApi/Dockerfile -t bookingapi ./src/BookingApi/
 
 read -p "What Environment would you like ('Production(p, P)') else development: " VAR1
 

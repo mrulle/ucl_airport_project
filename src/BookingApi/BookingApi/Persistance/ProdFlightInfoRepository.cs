@@ -76,6 +76,11 @@ public class ProdFlightInfoRepository : IFlightInfoRepository
         throw new Exception("multiple rows with same id");
     }
 
+    public List<FlightInfoModel> GetPaged(int page, int take = 10)
+    {
+        return GetAll().Skip(page * take).Take(take).ToList();
+    }
+
     public string Update(FlightInfoModel item)
     {
         throw new NotImplementedException();
@@ -83,14 +88,30 @@ public class ProdFlightInfoRepository : IFlightInfoRepository
 
     private FlightInfoModel Map(NpgsqlDataReader reader) {
         FlightInfoModel model = new FlightInfoModel();
-        model.Arrival = DateTime.Parse(reader["arrival_time"].ToString());
-        model.Departure = DateTime.Parse(reader["departure"].ToString());
-        model.Origin = reader["origin"].ToString();
-        model.Destination = reader["destination"].ToString();
-        model.PlaneId = reader["plane_id"].ToString();
-        model.FlightId = reader["flight_id"].ToString();
-        model.PassengersAvailableTotal = int.Parse(reader["max_passengers"].ToString());
-        model.BaggageWeightAvailableTotal = int.Parse(reader["max_baggage_weight"].ToString());
+        var arrival_time = reader["arrival_time"].ToString() 
+            ?? throw new NullReferenceException("No arrival_time found.");
+        model.Arrival = DateTime.Parse(arrival_time);
+        var departure = reader["departure"].ToString()
+            ?? throw new NullReferenceException("No departure found");
+        model.Departure = DateTime.Parse(departure);
+        var origin = reader["origin"].ToString()
+            ?? throw new NullReferenceException("No origin found.");
+        model.Origin = origin;
+        var destination = reader["destination"].ToString()
+            ?? throw new NullReferenceException("No destination found.");
+        model.Destination = destination;
+        var plane_id = reader["plane_id"].ToString()
+            ?? throw new NullReferenceException("No plane_id found");
+        model.PlaneId = plane_id;
+        var flight_id = reader["flight_id"].ToString()
+            ?? throw new NullReferenceException("No flight_id found");
+        model.FlightId = flight_id;
+        var max_passengers = reader["max_passengers"].ToString()
+            ?? throw new NullReferenceException("No max_passengers found");
+        model.PassengersAvailableTotal = int.Parse(max_passengers);
+        var max_baggage_weight = reader["max_baggage_weight"].ToString()
+            ?? throw new NullReferenceException("No max_baggage_weight found");
+        model.BaggageWeightAvailableTotal = int.Parse(max_baggage_weight);
         return model;
     }
 }

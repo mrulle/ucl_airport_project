@@ -19,9 +19,9 @@
       <div class="flightHeader">
         <h3>Flight</h3>
       </div>
-      <div class="flightLogo">
+      <!-- <div class="flightLogo">
         <img src="../assets/monkey-plane.png" width="128" height="128">
-      </div>
+      </div> -->
       <p><span class="flightSpan">Origin:</span> {{ flight.origin }}</p>
       <p><span class="flightSpan">Destination:</span> {{ flight.destination }}</p>
       <p><span class="flightSpan">Departure:</span> {{ flight.departure }}</p>
@@ -91,7 +91,7 @@ export default {
 }
 .bookingItem {
   background-color: white;
-  padding: 40px;
+  padding: 20px;
   text-align: left;
   border-radius: 10px;
 }
