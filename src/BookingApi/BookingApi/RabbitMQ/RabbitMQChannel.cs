@@ -19,10 +19,7 @@ namespace BookingApi.RabbitMQ
         private List<string> _routingKeys = new List<string>();
         private List<string> _queues = new List<string>();
         private Dictionary<string, object> _defaultDeadLetterQueue = new Dictionary<string, object>();
-        private string _defaultExchange = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_EXCHANGE") ?? "FlightJourney";
-        private string _defaultQueueName = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_QUEUENAME") ?? "Booking";
-        private string _defaultRoutingKey = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_ROUTINGKEY") ?? "BookingPlaneAndFlight";
-        private IFlightInfoRepository flightrepo;
+         private IFlightInfoRepository flightrepo;
 
         public RabbitMQChannel(RabbitMQConnection connection, IFlightInfoRepository flightInfo)
         {
@@ -35,7 +32,7 @@ namespace BookingApi.RabbitMQ
         public void CreateExchange(string exchangeName, string type = "")
         {
             type = (type == default && type == "") ? type : ExchangeType.Topic;
-            var name = exchangeName ?? _defaultExchange;
+            var name = exchangeName;
             _channel.ExchangeDeclare(exchange: name, type: type);
 
             
@@ -43,9 +40,7 @@ namespace BookingApi.RabbitMQ
 
         public void BindQueueToChannel(string exchange, string queueName, string routingKey = default)
         {
-            exchange = exchange ?? _defaultExchange;
-            queueName = queueName ?? _defaultQueueName;
-            routingKey = routingKey ?? _defaultQueueName;
+            routingKey = routingKey ?? string.Empty;
             CreateExchange(exchange);
             _routingKeys.Add(routingKey);
             _channel.QueueBind(
@@ -67,15 +62,13 @@ namespace BookingApi.RabbitMQ
         }
 
 
-        private void CreateQueue(string queueName = default,
+        public void CreateQueue(string queueName = default,
                                  bool durable = false,
                                  bool exclusive = false,
                                  bool autodelete = false,
                                  Dictionary<string, object>? arguments = null, bool doesContainDeadletter = true)
         {
             if (doesContainDeadletter == true) arguments = _defaultDeadLetterQueue;
-            queueName = queueName ?? _defaultQueueName;
-
             bool noqueue = true;
             while(noqueue)
             {
@@ -99,11 +92,6 @@ namespace BookingApi.RabbitMQ
         }
         public void ConsumeMessagesFromChannel(string queueName, string routingKey = "")
         {
-            queueName = queueName ?? _defaultQueueName;
-            routingKey = routingKey ?? _defaultRoutingKey;
-            var key = _routingKeys.Find(key => key == routingKey) ?? throw new NullReferenceException("No routingKeys Exists with that value");
-            var name = _routingKeys.Find(name => name == queueName) ?? throw new NullReferenceException("No queueName Exists with that value");
-
             var consumer = new EventingBasicConsumer(_channel);
             consumer.Received += (model, ea) =>
             {
@@ -116,7 +104,7 @@ namespace BookingApi.RabbitMQ
             };
 
             _channel.BasicConsume(
-                queue: name,
+                queue: queueName,
                 autoAck: true,
                 consumer: consumer);
         }

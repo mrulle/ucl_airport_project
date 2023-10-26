@@ -22,9 +22,9 @@ services:
       - ASPNETCORE_URLS=http://+:80
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=${RabbitMQServerPort}
-      - RABBITMQ_DEFAULT_EXCHANGE=${RabbitMQDefaultExchange}
-      - RABBITMQ_DEFAULT_QUEUENAME=${RabbitMQDefaultQueueName}
-      - RABBITMQ_DEFAULT_ROUTINGKEY=${RabbitMQDefaultRoutingKey}
+      - RABBITMQ_DEFAULT_EXCHANGE=${RABBITMQ_DEFAULT_EXCHANGE}
+      - RABBITMQ_DEFAULT_QUEUENAME=${RABBITMQ_DEFAULT_EXCHANGE}
+      - RABBITMQ_DEFAULT_ROUTINGKEY=${RABBITMQ_DEFAULT_EXCHANGE}
     volumes:
       - bookingapi:/src
     ports:

@@ -11,7 +11,7 @@ namespace BookingApi.Controllers
     {
         private readonly IBoardingPassRepository repo;
 
-        public BoardingPassController(IBoardingPassRepository repo, RabbitMQChannel channel)
+        public BoardingPassController(IBoardingPassRepository repo)
         {
             this.repo = repo;
         }
