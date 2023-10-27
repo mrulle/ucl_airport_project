@@ -41,9 +41,10 @@ export default {
                 })
             })
             .then( (response) => {
-                console.log(response);
-                alert('Check-In success!');
-                // Fetch boarding pass here
+                response.json();
+            })
+            .then((response) => {
+                alert('Checkin Success! Your boarding pass id: (' + response.checkinId + ') Your passenger id: (' + response.passengerId + ') Your FlightId: ' + response.flightId);
             })
             .catch((error) => {alert(error)});
         }

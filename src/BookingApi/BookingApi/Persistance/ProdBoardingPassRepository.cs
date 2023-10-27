@@ -53,6 +53,7 @@ public class ProdBoardingPassRepository : IBoardingPassRepository
         model.PassengerId = passenger_id;
         var flight_id = reader["flight_id"].ToString()
             ?? throw new NullReferenceException("no flight_id found");
+        model.FlightId = flight_id;
         return model;
     }
 
