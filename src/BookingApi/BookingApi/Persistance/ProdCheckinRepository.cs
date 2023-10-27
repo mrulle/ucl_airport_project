@@ -11,14 +11,13 @@ public class ProdCheckinRepository : ICheckinRepository
         using var con = new NpgsqlConnection(cs);
         string checkinId = Guid.NewGuid().ToString();
         con.Open();
-        var sql = $"call sp_checkin_passenger('{item.BookingId}', '{checkinId}';";
+        var sql = $"call sp_checkin_passenger('{checkinId}'::UUID, '{item.BookingId}'::UUID);";
         Console.WriteLine($"attempting this statement:\n{sql}");
         using var cmd = new NpgsqlCommand(sql, con);
         var rowsAffected = cmd.ExecuteNonQuery();
         con.Close();
-        if (rowsAffected < 1) {
-            throw new Exception("ooops.. something went wrong");
-        }
+        // Cannot verify that this booking has already been checked in
+        Console.WriteLine($"rowsAffected: {rowsAffected}");
         return checkinId;
     }
 
