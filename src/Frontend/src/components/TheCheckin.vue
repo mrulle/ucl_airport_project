@@ -40,12 +40,10 @@ export default {
                     bookingId: this.bookingId,
                 })
             })
-            .then( (response) => {
-                response.json();
-            })
-            .then((response) => {
-                alert('Checkin Success! Your boarding pass id: (' + response.checkinId + ') Your passenger id: (' + response.passengerId + ') Your FlightId: ' + response.flightId);
-            })
+            .then((response) => response.json())
+            .then((response => {
+                alert('Check-In Success! Your boarding pass id: ' + response.checkinId + ' Your passenger id: ' + response.passengerId + ' Your flightId: ' + response.flightId);
+            }))
             .catch((error) => {alert(error)});
         }
     }

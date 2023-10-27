@@ -33,13 +33,13 @@ namespace BookingApi.Controllers
         {
             string generatedId = _checkinRepo.Add(model);
 
+            var boardingPass = _boardingPassRepo.GetById(generatedId);
+            
             // It should actually return this (and remove the boarding pass repo) to accommodate rest structure
             // But had trouble fetching the boarding pass on the controller endpoint immediately after this endpoint returned
-            // return CreatedAtAction(nameof(Get), new { id = generatedId }, model);
+            return CreatedAtAction(nameof(Get), new { id = generatedId }, boardingPass);
 
-            var boardingPass = _boardingPassRepo.GetById(generatedId);
-
-            return Ok(boardingPass);
+            // return Ok(boardingPass);
         }
 
         [HttpDelete("{id}")]
