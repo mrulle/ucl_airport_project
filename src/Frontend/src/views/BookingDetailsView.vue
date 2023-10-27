@@ -55,8 +55,7 @@ export default {
                 this.flightInfo = response;
             }))
             .catch(error => alert(error));
-    }
-    ,
+    },
     methods: {
         handleSubmit() {
             fetch("http://127.0.0.1:40080/Booking", {
@@ -67,14 +66,17 @@ export default {
                 },
                 body: JSON.stringify({
                     email: this.email,
-                    bookingId: '',
                     passportNumber: this.passportNumber,
-                    addedLuggage: this.addedLuggage
+                    addedLuggage: this.addedLuggage,
+                    bagageId: '',
+                    flightId: this.$route.params.flightId,
+                    passengerId: '',
+                    inputBookingId: ''
                 })
             })
             .then((response) => response.json())
             .then((response => {
-                alert('Booking success! Your booking id is: ' + response.bookingId);
+                alert('Booking success! Your booking id is: ' + response.inputBookingId);
             }))
             .catch((error) => alert(error));
         }

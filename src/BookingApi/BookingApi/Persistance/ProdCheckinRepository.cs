@@ -1,25 +1,24 @@
 using BookingApi.Models;
 using Npgsql;
-
 namespace BookingApi.Persistance;
 
 
-public class ProdBookingRepository : IBookingRepository
+public class ProdCheckinRepository : ICheckinRepository
 {
-    public string Add(BookingModel item)
+    public string Add(CheckinModel item)
     {
         var cs = "Host=postgres;Username=postgres;Password=postgres;Database=production";
         using var con = new NpgsqlConnection(cs);
+        string checkinId = Guid.NewGuid().ToString();
         con.Open();
-        item.BagageId = Guid.NewGuid().ToString();
-        item.PassengerId = Guid.NewGuid().ToString();
-        item.InputBookingId = Guid.NewGuid().ToString();
-        var sql = $"call sp_insert_booking_data('{item.Email}'::VARCHAR(255), '{item.PassportNumber}'::VARCHAR(255), {item.AddedLuggage}, '{item.BagageId}'::UUID, '{item.FlightId}'::UUID, '{item.PassengerId}'::UUID, '{item.InputBookingId}'::UUID);";
+        var sql = $"call sp_checkin_passenger('{checkinId}'::UUID, '{item.BookingId}'::UUID);";
         Console.WriteLine($"attempting this statement:\n{sql}");
         using var cmd = new NpgsqlCommand(sql, con);
         var rowsAffected = cmd.ExecuteNonQuery();
         con.Close();
-        return item.InputBookingId;
+        // Cannot verify that this booking has already been checked in
+        Console.WriteLine($"rowsAffected: {rowsAffected}");
+        return checkinId;
     }
 
     public bool Delete(string id)
@@ -27,18 +26,19 @@ public class ProdBookingRepository : IBookingRepository
         throw new NotImplementedException();
     }
 
-    public List<BookingModel> GetAll()
+    public List<CheckinModel> GetAll()
     {
         throw new NotImplementedException();
     }
 
-    public BookingModel GetById(string id)
+    public CheckinModel GetById(string id)
     {
         throw new NotImplementedException();
     }
 
-    public string Update(BookingModel item)
+    public string Update(CheckinModel item)
     {
         throw new NotImplementedException();
     }
 }
+
