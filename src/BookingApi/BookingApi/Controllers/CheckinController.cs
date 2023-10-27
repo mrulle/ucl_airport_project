@@ -34,7 +34,7 @@ namespace BookingApi.Controllers
         public IActionResult Post([FromBody] CheckinModel model) 
         {
             string generatedId = _checkinRepo.Add(model);
-
+            Thread.Sleep(1000);
             var boardingPass = _boardingPassRepo.GetById(generatedId);
             
             // It should actually return this (and remove the boarding pass repo) to accommodate rest structure
