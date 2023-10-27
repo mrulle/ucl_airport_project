@@ -111,7 +111,8 @@ namespace BookingApi.RabbitMQ
 
 
 
-        public void PublishMessagesToExchange(string exchangeName, object msg, 
+        public void PublishMessagesToExchange(string exchangeName, 
+                                              object msg, 
                                               string routingKey = "", 
                                               IBasicProperties properties = null, 
                                               string exchangeType = ExchangeType.Topic)
@@ -119,12 +120,14 @@ namespace BookingApi.RabbitMQ
 
             
             var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(msg));
+            
             CreateExchange(exchangeName, exchangeType);
             _channel.BasicPublish(exchange: exchangeName,
                                    routingKey: routingKey,
                                    mandatory: false,
                                    basicProperties: properties,
                                    body: body);
+                                   
         }
     }
 }

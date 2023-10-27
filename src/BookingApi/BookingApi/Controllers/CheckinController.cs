@@ -11,11 +11,13 @@ namespace BookingApi.Controllers
     {
         private readonly ICheckinRepository _checkinRepo;
         private readonly IBoardingPassRepository _boardingPassRepo;
+        private readonly IBaggageRepository _bagRepo;
 
-        public CheckinController(ICheckinRepository repo, IBoardingPassRepository boardingPassRepo)
+        public CheckinController(ICheckinRepository repo, IBoardingPassRepository boardingPassRepo, IBaggageRepository bagRepo)
         {
             this._checkinRepo = repo;
             _boardingPassRepo = boardingPassRepo;
+            this._bagRepo = bagRepo;
         }
 
         [HttpGet]
@@ -29,17 +31,16 @@ namespace BookingApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] CheckinModel model)
+        public IActionResult Post([FromBody] CheckinModel model) 
         {
             string generatedId = _checkinRepo.Add(model);
-
+            Thread.Sleep(1000);
             var boardingPass = _boardingPassRepo.GetById(generatedId);
             
             // It should actually return this (and remove the boarding pass repo) to accommodate rest structure
             // But had trouble fetching the boarding pass on the controller endpoint immediately after this endpoint returned
+            _bagRepo.GetById(model.BookingId);
             return CreatedAtAction(nameof(Get), new { id = generatedId }, boardingPass);
-
-            // return Ok(boardingPass);
         }
 
         [HttpDelete("{id}")]
