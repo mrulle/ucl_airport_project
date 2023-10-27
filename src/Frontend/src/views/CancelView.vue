@@ -1,17 +1,15 @@
 <template>
-    <div class="checkin">
-        <h1 style="color: hsla(160, 100%, 37%, 1);">Check-In</h1>
+    <div class="details">
+        <h1 style="color: hsla(160, 100%, 37%, 1);">Cancel Booking</h1>
         <div class="routerLink">
             <RouterLink to="/">Go Back</RouterLink>
         </div>
-        <div class="checkinDetails">
+        <div class="bookingDetails">
             <form @submit.prevent="handleSubmit">
-                <label>Email:</label>
-                <input type="email" required v-model="email">
-                <label>Booking Id</label>
-                <input type="text" required v-model="bookingId">
+                <label>Booking Id:</label>
+                <input type="text" v-model="bookingId">
                 <div class="submit">
-                    <button>Check-In now!</button>
+                    <button>Cancel Booking</button>
                 </div>
             </form>
         </div>
@@ -22,29 +20,22 @@
 export default {
     data () {
         return {
-            email: '',
-            bookingId: ''
+            bookingId: '',
         }
+    },
+    created() {
+        
     },
     methods: {
         handleSubmit() {
-            fetch("http://127.0.0.1:40080/Checkin", {
-                method: "post",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    checkinId: '',
-                    email: this.email,
-                    bookingId: this.bookingId,
-                })
+            fetch(`http://127.0.0.1:40080/Booking/${this.bookingId}`, {
+                method: "delete",
             })
             .then((response) => response.json())
-            .then((response => {
-                alert('Check-In Success! Your boarding pass id: ' + response.checkinId + ' Your passenger id: ' + response.passengerId + ' Your flightId: ' + response.flightId);
-            }))
-            .catch((error) => {alert(error)});
+            .then(() => {
+                alert('Booking successfully cancelled!');
+            })
+            .catch((error) => alert(error));
         }
     }
 }

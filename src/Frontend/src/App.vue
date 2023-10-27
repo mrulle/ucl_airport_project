@@ -19,6 +19,11 @@ import { RouterLink, RouterView } from 'vue-router'
             <RouterLink to="/">Booking</RouterLink>
           </div>
         </li>
+        <li>
+          <div class="routerLink main-router">
+            <RouterLink to="/cancel">Cancel Booking</RouterLink>
+          </div>
+        </li>
       </nav>
     </div>
   </header>
@@ -47,7 +52,7 @@ body {
   letter-spacing: 2px;
   text-transform: uppercase;
   font-size: large;
-  padding-top: 10px;
+  padding-top: 0px;
 }
 .headline {
   padding: 30px;
