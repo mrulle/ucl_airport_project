@@ -1,5 +1,6 @@
 using BookingApi.Models;
 using BookingApi.RabbitMQ;
+using Microsoft.Extensions.ObjectPool;
 using Npgsql;
 
 namespace BookingApi.Persistance;
@@ -48,9 +49,11 @@ public class ProdBaggageRepository : IBaggageRepository
         }
         Console.WriteLine($"found {baggages.Count()} results");
         con.Close();
-        UpdateBaggage(baggages[0]);
-        return baggages[0];
-        
+        if (baggages.Count == 1)
+        {
+            UpdateBaggage(baggages[0]);
+            return baggages[0];
+        }
         throw new Exception("multiple rows with same id");
     }
     private void UpdateBaggage(BaggageModel baggageModel){
