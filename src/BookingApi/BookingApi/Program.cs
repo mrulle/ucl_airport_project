@@ -34,6 +34,7 @@ namespace BookingApi
                 builder.Services.AddScoped<IBookingRepository, ProdBookingRepository>();
                 builder.Services.AddScoped<ICheckinRepository, ProdCheckinRepository>();
                 builder.Services.AddScoped<IFlightInfoRepository, ProdFlightInfoRepository>();
+                builder.Services.AddScoped<IBaggageRepository, ProdBaggageRepository>();
             }
 
             builder.Services.AddCors(options => {
@@ -49,7 +50,7 @@ namespace BookingApi
             });
 
             var app = builder.Build();
-            // app.UseRabbit();
+            app.UseRabbit();
             // Configure the HTTP request pipeline.
             // NOTE: Add implementation of PROD Repository
             if (app.Environment.IsDevelopment())

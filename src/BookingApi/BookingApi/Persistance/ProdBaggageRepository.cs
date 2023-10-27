@@ -1,15 +1,15 @@
 using BookingApi.Models;
+using BookingApi.RabbitMQ;
 using Npgsql;
 
 namespace BookingApi.Persistance;
 
-public delegate BaggageModel BagageCreatedEventHandler(string bookingid);
-public class ProdBaggageRepository
+public class ProdBaggageRepository : IBaggageRepository
 {
-    public static BagageCreatedEventHandler NotifyBagage = new BagageCreatedEventHandler(NotifyBaggage);
-    public ProdBaggageRepository()
+    private RabbitMQChannel _channel;
+    public ProdBaggageRepository(RabbitMQChannel channel)
     {
-        NotifyBagage = new BagageCreatedEventHandler(GetById);
+        _channel = channel;
     }
 
     public static BaggageModel NotifyBaggage(string id)
@@ -34,40 +34,40 @@ public class ProdBaggageRepository
 
     public BaggageModel GetById(string id)
     {
-        for(int i = 0; i < 10; i++){
-            Console.WriteLine("HELLO ");
+        var cs = "Host=postgres;Username=postgres;Password=postgres;Database=production";
+        using var con = new NpgsqlConnection(cs);
+        con.Open();
+        var sql = $"select * from vw_baggage where booking_id='{id}';";
+        Console.WriteLine($"executing statement:\n{sql}");
+        using var cmd = new NpgsqlCommand(sql, con);
+        using var reader = cmd.ExecuteReader();
+        List<BaggageModel> baggages = new();
+        while (reader.Read()) {
+            var mappedBaggage = Map(reader);
+            baggages.Add(mappedBaggage);
         }
-        // var cs = "Host=postgres;Username=postgres;Password=postgres;Database=production";
-        // using var con = new NpgsqlConnection(cs);
-        // con.Open();
-        // var sql = $"select * from vw_bagage where booking_id='{id}';";
-        // Console.WriteLine($"executing statement:\n{sql}");
-        // using var cmd = new NpgsqlCommand(sql, con);
-        // using var reader = cmd.ExecuteReader();
-        // List<BaggageModel> baggages = new();
-        // while (reader.Read()) {
-        //     var mappedBoardingPass = Map(reader);
-        //     baggages.Add(mappedBoardingPass);
-        // }
-        // Console.WriteLine($"found {baggages.Count()} results");
-        // con.Close();
-        // if (baggages.Count() == 1){
-        //     return baggages[0];
-        // }
-        // throw new Exception("multiple rows with same id");
-        return null;
+        Console.WriteLine($"found {baggages.Count()} results");
+        con.Close();
+        UpdateBaggage(baggages[0]);
+        return baggages[0];
+        
+        throw new Exception("multiple rows with same id");
     }
+    private void UpdateBaggage(BaggageModel baggageModel){
+         var exchangeName = Environment.GetEnvironmentVariable("RABBITMQ_BAGAGE_EXCHANGE");
 
+         _channel.PublishMessagesToExchange(exchangeName, baggageModel);
+    }
 
     private BaggageModel Map(NpgsqlDataReader reader)
     {
         BaggageModel model = new();
-        var checkin_id = reader["flight_id"].ToString()
+        var checkin_id = reader["booking_id"].ToString()
             ?? throw new NullReferenceException("no flight_id found");
         model.CheckInNumber = checkin_id;
         var passenger_id = reader["passenger_id"].ToString()
             ?? throw new NullReferenceException("no passenger_id found");
-        model.PassengerId = checkin_id;
+        model.PassengerId = passenger_id;
         var flight_id = reader["flight_id"].ToString()
             ?? throw new NullReferenceException("no flight_id found");
         model.FlightNumber = flight_id;

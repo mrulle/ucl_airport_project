@@ -10,10 +10,12 @@ namespace BookingApi.Controllers
     public class CheckinController : ControllerBase
     {
         private readonly ICheckinRepository repo;
+        private readonly IBaggageRepository _bagRepo;
 
-        public CheckinController(ICheckinRepository repo)
+        public CheckinController(ICheckinRepository repo, IBaggageRepository bagRepo)
         {
             this.repo = repo;
+            this._bagRepo = bagRepo;
         }
 
         [HttpGet]
@@ -27,9 +29,10 @@ namespace BookingApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] CheckinModel model)
+        public IActionResult Post([FromBody] CheckinModel model) 
         {
             string generatedId = repo.Add(model);
+            _bagRepo.GetById(model.BookingId);
             return CreatedAtAction(nameof(Get), new { id = generatedId }, model);
         }
 
