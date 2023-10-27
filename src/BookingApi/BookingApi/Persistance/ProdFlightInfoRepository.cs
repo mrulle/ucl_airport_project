@@ -1,19 +1,10 @@
-using System.Runtime.InteropServices;
 using BookingApi.Models;
-using BookingApi.Persistance.DAO;
 using Npgsql;
 namespace BookingApi.Persistance;
 
 
 public class ProdFlightInfoRepository : IFlightInfoRepository
 {
-    private readonly EF_DataContext context;
-
-    public ProdFlightInfoRepository(EF_DataContext context)
-    {
-        this.context = context;
-    }
-
     public string Add(FlightInfoModel item)
     {
         var cs = "Host=postgres;Username=postgres;Password=postgres;Database=production";
