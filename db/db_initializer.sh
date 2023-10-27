@@ -130,6 +130,26 @@ initalize_database_views(){
     initalize_booking_view
     initalize_checkin_view
     initalize_flight_info_view
+    initalize_baggage
+}
+
+initalize_boarding_pass_view(){
+    echo "Creating boarding_pass_view"
+    psql -v ON_ERROR_STOP=1 --username "$APP_DB_USER" --dbname "$APP_DB_NAME" <<-EOSQL
+    BEGIN;
+
+    create or replace view vw_boarding_pass
+    AS SELECT
+        c.id as checkin_id,
+        b.passenger_id,
+        b.flight_id
+
+    FROM bookings b
+        inner join checkins c
+            on b.id = c.booking_id;
+
+    COMMIT;
+EOSQL
 }
 
 initalize_boarding_pass_view(){
@@ -212,6 +232,30 @@ initalize_flight_info_view(){
     FROM flights f
         inner join planes p
             on p.id = f.plane_id;
+
+    COMMIT;
+EOSQL
+}
+
+initalize_baggage(){
+    echo "Creating baggage view"
+    psql -v ON_ERROR_STOP=1 --username "$APP_DB_USER" --dbname "$APP_DB_NAME" <<-EOSQL
+    BEGIN;
+
+    create or replace view vw_baggage
+    AS SELECT
+    f.id as flight_id,
+    p.id as passenger_id,
+    b.id as booking_id,
+    f.destination as destination,
+    bag.weight as weight
+    FROM bookings b
+        inner join flights f
+            on b.flight_id = f.id
+        inner join passengers p
+            on p.id = b.passenger_id
+        inner join baggage bag
+            on bag.booking_id = b.id;
 
     COMMIT;
 EOSQL
