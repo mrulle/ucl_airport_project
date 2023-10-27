@@ -19,8 +19,8 @@ namespace BookingApi.RabbitMQ
 
         public RabbitMQConnection()
         {
-            //_rabbitmqPort = (int.Parse(Environment.GetEnvironmentVariable("RABBITMQ_PORT")) == 0) ? 5672 
-            //                                : int.Parse(Environment.GetEnvironmentVariable("RABBITMQ_PORT"));      
+            _rabbitmqPort = (int.Parse(Environment.GetEnvironmentVariable("RABBITMQ_PORT")) == 0) ? 5672 
+                                           : int.Parse(Environment.GetEnvironmentVariable("RABBITMQ_PORT"));      
 
             _rabbitmqPort = 5672;
             _factory = new ConnectionFactory {  HostName = _host,

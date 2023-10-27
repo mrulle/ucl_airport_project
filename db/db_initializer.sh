@@ -151,6 +151,25 @@ initalize_boarding_pass_view(){
 EOSQL
 }
 
+initalize_boarding_pass_view(){
+    echo "Creating boarding_pass_view"
+    psql -v ON_ERROR_STOP=1 --username "$APP_DB_USER" --dbname "$APP_DB_NAME" <<-EOSQL
+    BEGIN;
+
+    create or replace view vw_boarding_pass
+    AS SELECT
+        c.id as checkin_id,
+        b.passenger_id,
+        b.flight_id
+
+    FROM bookings b
+        inner join checkins c
+            on b.id = c.booking_id;
+
+    COMMIT;
+EOSQL
+}
+
 initalize_booking_view(){
     echo "Creating booking_view"
     psql -v ON_ERROR_STOP=1 --username "$APP_DB_USER" --dbname "$APP_DB_NAME" <<-EOSQL
