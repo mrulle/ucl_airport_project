@@ -1,15 +1,17 @@
 <template>
     <div class="details">
-        <h1 style="color: hsla(160, 100%, 37%, 1);">Booking Details!</h1>
-        <div class="routerLink">
-            <RouterLink to="/">Go Back</RouterLink>
-        </div>
-        <div class="flightDetails">
-            <h3>Currently booking for flight:</h3>
-            <p>Origin: {{ flightInfo.origin }}</p>
-            <p>Destination: {{ flightInfo.destination }}</p>
-            <p>Departure: {{ flightInfo.departure }}</p>
-            <p>Arrival: {{ flightInfo.arrival }}</p>
+        <div class="bookingHeader">
+            <h1 style="color: hsla(160, 100%, 37%, 1);">Booking Details!</h1>
+            <div class="routerLink">
+                <RouterLink to="/">Go Back</RouterLink>
+            </div>
+            <div class="flightDetails">
+                <h3>Currently booking for flight:</h3>
+                <p>Origin: {{ flightInfo.origin }}</p>
+                <p>Destination: {{ flightInfo.destination }}</p>
+                <p>Departure: {{ flightInfo.departure }}</p>
+                <p>Arrival: {{ flightInfo.arrival }}</p>
+            </div>
         </div>
         <div class="bookingDetails">
             <form @submit.prevent="handleSubmit">
