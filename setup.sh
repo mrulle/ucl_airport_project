@@ -7,7 +7,7 @@ read -p "Should the Volume be deleted? (y/Y)? " VAR2
 
 if [ "$VAR1" = "Production" ] || [ "$VAR1" = "p" ] || [ "$VAR1" = "P" ]; then
     echo "<----------------    Production    ---------------->"
-    docker volume rm postgres_prod
+#    docker volume rm postgres_prod
     docker compose --env-file ./.env.prod build
     docker compose --env-file ./.env.prod up -d
 else

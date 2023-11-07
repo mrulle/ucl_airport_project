@@ -7,8 +7,8 @@
             </div>
             <div class="flightDetails">
                 <h3>Currently booking for flight:</h3>
-                <p>Origin: {{ flightInfo.origin }}</p>
-                <p>Destination: {{ flightInfo.destination }}</p>
+                <p>Origin: {{ flightInfo.flightOrigin }}</p>
+                <p>Destination: {{ flightInfo.flightDestination }}</p>
                 <p>Departure: {{ flightInfo.departure }}</p>
                 <p>Arrival: {{ flightInfo.arrival }}</p>
             </div>
@@ -39,8 +39,8 @@ export default {
                 flightId: '',
                 departure: '',
                 arrival: '',
-                origin: '',
-                destination: '',
+                flightOrigin: '',
+                flightDestination: '',
                 passengersAvailableTotal: 0,
                 baggageWeightAvailableTotal: 0
             },

@@ -59,7 +59,7 @@ public class ProdBaggageRepository : IBaggageRepository
     private void UpdateBaggage(BaggageModel baggageModel){
          var exchangeName = Environment.GetEnvironmentVariable("RABBITMQ_BAGAGE_EXCHANGE");
 
-         _channel.PublishMessagesToExchange(exchangeName, baggageModel);
+         _channel.PublishMessagesToExchange(string.Empty, baggageModel, routingKey: exchangeName);
     }
 
     private BaggageModel Map(NpgsqlDataReader reader)

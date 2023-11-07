@@ -7,11 +7,12 @@ public class ProdFlightInfoRepository : IFlightInfoRepository
 {
     public string Add(FlightInfoModel item)
     {
+        Console.WriteLine("About to add " + item.ToString());
         var cs = "Host=postgres;Username=postgres;Password=postgres;Database=production";
         using var con = new NpgsqlConnection(cs);
         con.Open();
         // var sql = $"call sp_insert_flight_data(plane_id, plane_max_passengers, plane_max_baggage_total, plane_max_baggage_weight, plane_max_baggage_dimension, flight_id, flight_arrival_time, flight_departure, flight_origin, flight_destination) values ('{item.PlaneId}', {item.PassengersAvailableTotal}, {item.BaggageWeightAvailableTotal}, 4000000, 150, '{item.FlightId}', '{item.Arrival}', '{item.Departure}', '{item.Origin}', '{item.Destination}');";
-        var sql = $"call sp_insert_flight_data('{item.PlaneId}', {item.PassengersAvailableTotal}, {item.BaggageWeightAvailableTotal}, 400000, 150, '{item.FlightId}', '{item.Arrival}', '{item.Departure}', '{item.Origin}', '{item.Destination}');";
+        var sql = $"call sp_insert_flight_data('{item.PlaneId}'::VARCHAR(255), {item.PassengersAvailableTotal}, {item.BaggageWeightAvailableTotal}, 400000, 150, '{item.FlightId}'::VARCHAR(255), '{item.Arrival}', '{item.Departure}', '{item.FlightOrigin}', '{item.FlightDestination}');";
         Console.WriteLine($"attempting this statement:\n{sql}");
         using var cmd = new NpgsqlCommand(sql, con);
         var rowsAffected = cmd.ExecuteNonQuery();
@@ -87,10 +88,10 @@ public class ProdFlightInfoRepository : IFlightInfoRepository
         model.Departure = DateTime.Parse(departure);
         var origin = reader["origin"].ToString()
             ?? throw new NullReferenceException("No origin found.");
-        model.Origin = origin;
+        model.FlightOrigin = origin;
         var destination = reader["destination"].ToString()
             ?? throw new NullReferenceException("No destination found.");
-        model.Destination = destination;
+        model.FlightDestination = destination;
         var plane_id = reader["plane_id"].ToString()
             ?? throw new NullReferenceException("No plane_id found");
         model.PlaneId = plane_id;

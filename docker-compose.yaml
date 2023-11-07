@@ -20,8 +20,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=${Environment}
       - ASPNETCORE_URLS=http://+:80
-      - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_PORT=${RabbitMQServerPort}
+      - RABBITMQ_HOST=10.228.16.162
+      - RABBITMQ_PORT=5672
       - RABBITMQ_FLIGHT_EXCHANGE=${RABBITMQ_FLIGHT_EXCHANGE}
       - RABBITMQ_FLIGHT_QUEUENAME=${RABBITMQ_FLIGHT_QUEUENAME}
       - RABBITMQ_FLIGHT_ROUTINGKEY=${RABBITMQ_FLIGHT_ROUTINGKEY}
@@ -41,7 +41,7 @@ services:
       - 5432:5432
     volumes:
       - postgres:/var/lib/postgresql/data
-      - ./db/db_seeder.sh:/x-db_seeder.sh
+      # - ./db/db_seeder.sh:/x-db_seeder.sh
       - ./db/db_initializer.sh:/docker-entrypoint-initdb.d/10-init.sh
     environment:
         POSTGRES_PASSWORD: postgres

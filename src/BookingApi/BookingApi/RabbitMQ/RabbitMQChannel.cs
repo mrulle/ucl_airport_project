@@ -96,10 +96,22 @@ namespace BookingApi.RabbitMQ
             consumer.Received += (model, ea) =>
             {
                 var body = Encoding.UTF8.GetString(ea.Body.ToArray());
-                var flight = JsonConvert.DeserializeObject<FlightInfoModel>(body);
+                Console.WriteLine("Message received " + body);
+                FlightInfoModel? flight = null;
+                try
+                {
+                    flight = JsonConvert.DeserializeObject<FlightInfoModel>(body);
+                }
+                catch (System.Exception ex)
+                {
+                    Console.WriteLine("Could not serialize: " + ex);
+                }
                 if(flight != null)
                 {
+                    Console.WriteLine("About to add the flight to the repo " + flight.ToString());
                     flightrepo.Add(flight);
+                }else {
+                    Console.WriteLine("Could not deserialize object");
                 }
             };
 
@@ -121,7 +133,9 @@ namespace BookingApi.RabbitMQ
             
             var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(msg));
             
-            CreateExchange(exchangeName, exchangeType);
+            if (exchangeName != string.Empty) {
+                CreateExchange(exchangeName, exchangeType);
+            }
             _channel.BasicPublish(exchange: exchangeName,
                                    routingKey: routingKey,
                                    mandatory: false,

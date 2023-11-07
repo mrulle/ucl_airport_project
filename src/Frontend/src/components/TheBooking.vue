@@ -22,8 +22,8 @@
       <!-- <div class="flightLogo">
         <img src="../assets/monkey-plane.png" width="128" height="128">
       </div> -->
-      <p><span class="flightSpan">Origin:</span> {{ flight.origin }}</p>
-      <p><span class="flightSpan">Destination:</span> {{ flight.destination }}</p>
+      <p><span class="flightSpan">Origin:</span> {{ flight.flightOrigin }}</p>
+      <p><span class="flightSpan">Destination:</span> {{ flight.flightDestination }}</p>
       <p><span class="flightSpan">Departure:</span> {{ flight.departure }}</p>
       <p><span class="flightSpan">Arrival:</span> {{ flight.arrival }}</p>
       <div class="routerLink">

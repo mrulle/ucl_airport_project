@@ -25,7 +25,7 @@ main() {
     initalize_database_views
     initalize_database_stored_procedures
 
-    /bin/bash ../x-db_seeder.sh
+    #/bin/bash ../x-db_seeder.sh
 }
 
 #check all required env vars set
@@ -63,7 +63,7 @@ initalize_database_tables(){
     psql -v ON_ERROR_STOP=1 --username "$APP_DB_USER" --dbname "$APP_DB_NAME" <<-EOSQL
     BEGIN;
         CREATE TABLE passengers (
-            id uuid PRIMARY KEY,
+            id varchar(255) PRIMARY KEY,
             name VARCHAR(255),
             email VARCHAR(255),
             photo BYTEA,
@@ -71,7 +71,7 @@ initalize_database_tables(){
         );
 
         CREATE TABLE planes (
-            id uuid PRIMARY KEY,
+            id varchar(255) PRIMARY KEY,
             max_passengers INT,
             max_baggage_total INT,
             max_baggage_weight INT,
@@ -79,22 +79,22 @@ initalize_database_tables(){
         );
 
         CREATE TABLE flights (
-            id uuid PRIMARY KEY,
+            id varchar(255) PRIMARY KEY,
             arrival_time TIMESTAMP,
             departure TIMESTAMP,
             origin VARCHAR(255),
             destination VARCHAR(255),
-            plane_id uuid,
+            plane_id varchar(255),
             CONSTRAINT fk_flights_planes
                 FOREIGN KEY(plane_id)
                     REFERENCES planes(id)
         );        
 
         CREATE TABLE bookings (
-            id uuid PRIMARY KEY,
+            id varchar(255) PRIMARY KEY,
             created_date TIMESTAMP,
-            passenger_id uuid,
-            flight_id uuid,
+            passenger_id varchar(255),
+            flight_id varchar(255),
             CONSTRAINT fk_bookings_passengers
                 FOREIGN KEY(passenger_id)
                     REFERENCES passengers(id),
@@ -104,17 +104,17 @@ initalize_database_tables(){
         );
 
         CREATE TABLE checkins (
-            id uuid PRIMARY KEY,
-            booking_id uuid,
+            id varchar(255) PRIMARY KEY,
+            booking_id varchar(255),
             CONSTRAINT fk_checkins_bookings
                 FOREIGN KEY(booking_id)
                     REFERENCES bookings(id)
         );
 
         CREATE TABLE baggage (
-            id uuid PRIMARY KEY,
+            id varchar(255) PRIMARY KEY,
             weight INT,
-            booking_id uuid,
+            booking_id varchar(255),
             CONSTRAINT fk_baggage_bookings
                 FOREIGN KEY(booking_id)
                     REFERENCES bookings(id)
@@ -267,20 +267,20 @@ initalize_database_stored_procedures(){
     initalize_checkin_stored_procedure
 }
 
-# Be careful with the types for the insert statement: uuid and timestamps without timezones
-# CALL "sp_insert_flight_data"('d1227f62-a806-4dd6-922d-9be2611c1fc3'::UUID, 420, 9999, 10, 15, 'a9b78c41-c1e7-4ba6-9f9e-032d578d901d'::UUID, '2012-06-13 09:16:16', '2014-06-13 09:16:16', 'CPH', 'Berlin'::VARCHAR(255))
+# Be careful with the types for the insert statement: varchar(255) and timestamps without timezones
+# CALL "sp_insert_flight_data"('d1227f62-a806-4dd6-922d-9be2611c1fc3'::VARCHAR(255), 420, 9999, 10, 15, 'a9b78c41-c1e7-4ba6-9f9e-032d578d901d'::VARCHAR(255), '2012-06-13 09:16:16', '2014-06-13 09:16:16', 'CPH', 'Berlin'::VARCHAR(255))
 initalize_flight_stored_procedure(){
     echo "Creating flight procedure"
     psql -v ON_ERROR_STOP=1 --username "$APP_DB_USER" --dbname "$APP_DB_NAME" <<-EOSQL
     BEGIN;
 
     create or replace procedure sp_insert_flight_data(
-        plane_id uuid,
+        plane_id varchar(255),
         plane_max_passengers INT,
         plane_max_baggage_total INT,
         plane_max_baggage_weight INT,
         plane_max_baggage_dimension INT,
-        flight_id uuid,
+        flight_id varchar(255),
         flight_arrival_time TIMESTAMP,
         flight_departure TIMESTAMP,
         flight_origin VARCHAR(255),
@@ -311,10 +311,10 @@ initalize_booking_stored_procedure(){
         email varchar(255),
         passport_number varchar(255),
         baggage_weight int,
-        baggage_id uuid,
-        flight_id uuid,
-        passenger_id uuid,
-        input_booking_id uuid
+        baggage_id varchar(255),
+        flight_id varchar(255),
+        passenger_id varchar(255),
+        input_booking_id varchar(255)
     )
     language plpgsql
     as \$\$
@@ -346,8 +346,8 @@ initalize_checkin_stored_procedure(){
     BEGIN;
 
     create or replace procedure sp_checkin_passenger(
-        input_checkin_id uuid,
-        input_booking_id uuid
+        input_checkin_id varchar(255),
+        input_booking_id varchar(255)
     )
     language plpgsql
     as \$\$  

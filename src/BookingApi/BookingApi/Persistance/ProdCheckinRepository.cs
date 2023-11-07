@@ -11,7 +11,7 @@ public class ProdCheckinRepository : ICheckinRepository
         using var con = new NpgsqlConnection(cs);
         string checkinId = Guid.NewGuid().ToString();
         con.Open();
-        var sql = $"call sp_checkin_passenger('{checkinId}'::UUID, '{item.BookingId}'::UUID);";
+        var sql = $"call sp_checkin_passenger('{checkinId}'::VARCHAR(255), '{item.BookingId}'::VARCHAR(255));";
         Console.WriteLine($"attempting this statement:\n{sql}");
         using var cmd = new NpgsqlCommand(sql, con);
         var rowsAffected = cmd.ExecuteNonQuery();
