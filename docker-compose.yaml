@@ -9,7 +9,7 @@ services:
       - "${RabbitMQServer_OutPORT}:${RabbitMQServerPort}"
       - "${RabbitMQManagement_OutPORT}:${RabbitMQManagementPort}"
     volumes:
-      - "./rabbitmq.conf:/etc/rabbitmq/conf.d"
+      - "./rabbitmq.conf.d:/etc/rabbitmq/conf.d"
 
   bookingapi:
     container_name: bookingapi
