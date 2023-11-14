@@ -16,7 +16,11 @@ En gruppe af abekatte der ihærdigt prøver at komme igennem 2. semester softwar
 
 Eksempel docker run kommando:
 ```
+Dårlige Os'er
 docker run -d --rm --hostname my-rabbit --name test-rabbit -p 15673:15672 -p 5673:5672 -v ./enabled_plugins:/etc/rabbitmq/enabled_plugins rabbitmq:3-management
+
+Windows:
+docker run -d --rm --hostname my-rabbit --name test-rabbit -p 15673:15672 -p 5673:5672 -v .\enabled_plugins:/etc/rabbitmq/enabled_plugins rabbitmq:3-management
 ```
 
 ## Message logging
@@ -47,4 +51,15 @@ Rabbitmq's dokumentation siger at disse events kan *consumes* med et plugin så 
 source: https://www.rabbitmq.com/logging.html
 RabbitMQ skal sættes til at logge til `file` i stedet for `console`. Og `log level` skal sættes til debug.
 
-# TODO: Integrér trace log filen til Logstash
+## TODO: Integrér trace log filen til Logstash
+
+# Postman command to create the # pattern
+Put:
+http://localhost:15672/api/traces/node/{RabbitClusterName}/%2F/{TraceName}
+^ der er 3 "/" i træk og det kan være at det evt. skal fjernes / ændres
+
+curl -i -u guest:guest -H "Content-Type: application/json" -X PUT -d '{"vhost":"/","name":"{TraceName}","format":"text","tracer_connection_username":"guest","tracer_connection_password":"guest","pattern":"#","node":"{RabbitClusterName}"}' http://localhost:15672/api/traces/node/{RabbitClusterName}/%2F/{TraceName}
+
+# To find the name of the Rabbitmq instance (RabbitClusterName)
+`rabbitmq-diagnostics cluster_status | grep "^rabbit@" | head -1`
+	returns - rabbit@3e0634410bf7
