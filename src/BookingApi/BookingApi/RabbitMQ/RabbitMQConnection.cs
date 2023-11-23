@@ -25,7 +25,9 @@ namespace BookingApi.RabbitMQ
             _rabbitmqPort = 5672;
             _factory = new ConnectionFactory {  HostName = _host,
                                                 Port = _rabbitmqPort,
-                                                 RequestedHeartbeat = TimeSpan.FromSeconds(16)
+                                                 RequestedHeartbeat = TimeSpan.FromSeconds(16),
+                                                UserName = "guest",
+                                                Password = "guest"
             };
 
             

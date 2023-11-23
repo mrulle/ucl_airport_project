@@ -5,8 +5,8 @@ namespace BookingApi.Models {
         public string FlightId { get; set; } = String.Empty;
         public DateTime Departure { get; set; }
         public DateTime Arrival { get; set; }
-        public string Origin { get; set; } = String.Empty;
-        public string Destination { get; set; } = String.Empty;
+        public string FlightOrigin { get; set; } = String.Empty;
+        public string FlightDestination { get; set; } = String.Empty;
         public int PassengersAvailableTotal { get; set; }
         public int BaggageWeightAvailableTotal { get; set; }
     }

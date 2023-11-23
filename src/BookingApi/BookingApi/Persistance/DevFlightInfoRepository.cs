@@ -28,7 +28,6 @@ public class DevFlightInfoRepository: IFlightInfoRepository {
 
         if (!item.Any())
             throw new Exception($"No item was found with the id: {id}");
-
         if (item.Count() > 1) 
             throw new Exception($"More than one flight info was found with the id: {id}");
 

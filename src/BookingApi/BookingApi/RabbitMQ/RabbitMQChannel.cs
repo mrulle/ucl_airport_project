@@ -121,7 +121,14 @@ namespace BookingApi.RabbitMQ
             
             var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(msg));
             
-            CreateExchange(exchangeName, exchangeType);
+            if(exchangeName == string.Empty){
+                // CreateQueue(queueName: routingKey, doesContainDeadletter: true);
+                
+            }
+            else{
+                CreateExchange(exchangeName, exchangeType);
+            }
+            
             _channel.BasicPublish(exchange: exchangeName,
                                    routingKey: routingKey,
                                    mandatory: false,
