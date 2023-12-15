@@ -7,7 +7,7 @@ public class ProdFlightInfoRepository : IFlightInfoRepository
 {
     public string Add(FlightInfoModel item)
     {
-        var cs = "Host=postgres;Username=postgres;Password=postgres;Database=production";
+        var cs = "Host=postgres;Username=postgres;Password=postgres;Database=postgres";
         using var con = new NpgsqlConnection(cs);
         con.Open();
         // var sql = $"call sp_insert_flight_data(plane_id, plane_max_passengers, plane_max_baggage_total, plane_max_baggage_weight, plane_max_baggage_dimension, flight_id, flight_arrival_time, flight_departure, flight_origin, flight_destination) values ('{item.PlaneId}', {item.PassengersAvailableTotal}, {item.BaggageWeightAvailableTotal}, 4000000, 150, '{item.FlightId}', '{item.Arrival}', '{item.Departure}', '{item.Origin}', '{item.Destination}');";
@@ -26,7 +26,7 @@ public class ProdFlightInfoRepository : IFlightInfoRepository
 
     public List<FlightInfoModel> GetAll()
     {
-        var cs = "Host=postgres;Username=postgres;Password=postgres;Database=production";
+        var cs = "Host=postgres;Username=postgres;Password=postgres;Database=postgres";
         using var con = new NpgsqlConnection(cs);
         con.Open();
         var sql = "select * from vw_flight_info;";
@@ -46,7 +46,7 @@ public class ProdFlightInfoRepository : IFlightInfoRepository
 
     public FlightInfoModel GetById(string id)
     {
-        var cs = "Host=postgres;Username=postgres;Password=postgres;Database=production";
+        var cs = "Host=postgres;Username=postgres;Password=postgres;Database=postgres";
         using var con = new NpgsqlConnection(cs);
         con.Open();
         var sql = $"select * from vw_flight_info where flight_id='{id}';";

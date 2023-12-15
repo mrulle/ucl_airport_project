@@ -1,13 +1,21 @@
 using BookingApi.Models;
+using BookingApi.RabbitMQ;
 using Npgsql;
+using RabbitMQ.Client;
+
 namespace BookingApi.Persistance;
 
 
 public class ProdCheckinRepository : ICheckinRepository
 {
+    private readonly RabbitMQChannel _channel;
+    public ProdCheckinRepository(RabbitMQChannel channel)
+    {
+        this._channel = channel;
+    }
     public string Add(CheckinModel item)
     {
-        var cs = "Host=postgres;Username=postgres;Password=postgres;Database=production";
+        var cs = "Host=postgres;Username=postgres;Password=postgres;Database=postgres";
         using var con = new NpgsqlConnection(cs);
         string checkinId = Guid.NewGuid().ToString();
         con.Open();
@@ -18,7 +26,15 @@ public class ProdCheckinRepository : ICheckinRepository
         con.Close();
         // Cannot verify that this booking has already been checked in
         Console.WriteLine($"rowsAffected: {rowsAffected}");
-        return checkinId;
+        if (rowsAffected == 0)
+        {
+            throw new Exception("Booking has already been checked in");
+        }
+        else{
+            _channel.PublishMessagesToExchange(string.Empty, item,  "checkin.baggage", null, ExchangeType.Direct);
+            return checkinId;
+        }
+        
     }
 
     public bool Delete(string id)

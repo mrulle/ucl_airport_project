@@ -24,7 +24,7 @@ public class ProdBookingRepository : IBookingRepository
 
     public bool Delete(string id)
     {
-        var cs = "Host=postgres;Username=postgres;Password=postgres;Database=production";
+        var cs = "Host=postgres;Username=postgres;Password=postgres;Database=postgres";
         using var con = new NpgsqlConnection(cs);
         con.Open();
         var getPassengerSql = $"select passenger_id from bookings;";

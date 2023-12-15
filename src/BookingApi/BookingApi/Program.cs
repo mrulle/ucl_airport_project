@@ -21,20 +21,22 @@ namespace BookingApi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddSingleton<RabbitMQConnection>();
-            builder.Services.AddSingleton<RabbitMQChannel>();
             if (environment == "Development")
             {
                 builder.Services.AddSingleton<IBoardingPassRepository, DevBoardingPassRepository>();
                 builder.Services.AddSingleton<IBookingRepository, DevBookingRepository>();
                 builder.Services.AddSingleton<ICheckinRepository, DevCheckinRepository>();
                 builder.Services.AddSingleton<IFlightInfoRepository, DevFlightInfoRepository>();
-            } else {
+            } {
                 builder.Services.AddScoped<IBoardingPassRepository, ProdBoardingPassRepository>();
                 builder.Services.AddScoped<IBookingRepository, ProdBookingRepository>();
                 builder.Services.AddScoped<ICheckinRepository, ProdCheckinRepository>();
                 builder.Services.AddScoped<IFlightInfoRepository, ProdFlightInfoRepository>();
                 builder.Services.AddScoped<IBaggageRepository, ProdBaggageRepository>();
+            }
+            if (environment == "Production") {
+                builder.Services.AddSingleton<RabbitMQConnection>();
+                builder.Services.AddSingleton<RabbitMQChannel>();
             }
 
             builder.Services.AddCors(options => {
@@ -50,16 +52,12 @@ namespace BookingApi
             });
 
             var app = builder.Build();
-            app.UseRabbit();
-            // Configure the HTTP request pipeline.
-            // NOTE: Add implementation of PROD Repository
-            if (app.Environment.IsDevelopment())
-            {
-                
+            if (app.Environment.IsProduction()) {
+                app.UseRabbit();
+            } else {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
 
             app.UseHttpsRedirection();
 

@@ -22,7 +22,7 @@ public class ProdBoardingPassRepository : IBoardingPassRepository
 
     public BoardingPassModel GetById(string id)
     {
-        var cs = "Host=postgres;Username=postgres;Password=postgres;Database=production";
+        var cs = "Host=postgres;Username=postgres;Password=postgres;Database=postgres";
         using var con = new NpgsqlConnection(cs);
         con.Open();
         var sql = $"select * from vw_boarding_pass where checkin_id='{id}';";
