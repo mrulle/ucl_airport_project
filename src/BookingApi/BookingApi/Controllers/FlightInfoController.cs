@@ -9,10 +9,12 @@ namespace BookingApi.Controllers
     [Route("[controller]")]
     public class FlightInfoController: ControllerBase {
         private readonly IFlightInfoRepository repo;
+        private readonly ILogger<FlightInfoController> logger;
 
-        public FlightInfoController(IFlightInfoRepository repo)
+        public FlightInfoController(IFlightInfoRepository repo, ILogger<FlightInfoController> logger)
         {
             this.repo = repo;
+            this.logger = logger;
         }
 
         [HttpGet]
@@ -22,6 +24,7 @@ namespace BookingApi.Controllers
 
         [HttpGet("paged/{page}")]
         public IActionResult GetPaged(int page) {
+            logger.LogInformation("Flight Info paged information has been retrieved");
             return Ok(repo.GetPaged(page));
         }
 

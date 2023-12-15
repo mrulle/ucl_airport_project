@@ -1,5 +1,6 @@
 using BookingApi.Persistance;
 using BookingApi.RabbitMQ;
+using Serilog;
 
 namespace BookingApi
 {
@@ -9,6 +10,14 @@ namespace BookingApi
         {
 
             var builder = WebApplication.CreateBuilder(args);
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
+                .WriteTo.Http(requestUri: "http://logstash:8080", queueLimit: null)
+                .CreateLogger();
+
+            builder.Host.UseSerilog();
+
             var environment = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             if ( environment is null ) {
                 environment = "Development";
