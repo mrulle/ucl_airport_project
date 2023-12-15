@@ -35,7 +35,7 @@ public class ProdBaggageRepository : IBaggageRepository
 
     public BaggageModel GetById(string id)
     {
-        var cs = "Host=postgres;Username=postgres;Password=postgres;Database=production";
+        var cs = "Host=postgres;Username=postgres;Password=postgres;Database=postgres";
         using var con = new NpgsqlConnection(cs);
         con.Open();
         var sql = $"select * from vw_baggage where booking_id='{id}';";

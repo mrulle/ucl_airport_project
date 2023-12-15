@@ -28,11 +28,10 @@ services:
       - RABBITMQ_BAGAGE_EXCHANGE=${RABBITMQ_BAGAGE_EXCHANGE}
       - RABBITMQ_BORDINGPASS_EXCHANGE=${RABBITMQ_BORDINGPASS_EXCHANGE}
       - DEV_SETUP=${DEV_SETUP}
-      
     volumes:
       - bookingapi:/src
     ports:
-    - "${bookingapi_OutPORT}:${bookingapi_PORT}"
+      - "${bookingapi_OutPORT}:${bookingapi_PORT}"
 
   postgres:
     container_name: postgres

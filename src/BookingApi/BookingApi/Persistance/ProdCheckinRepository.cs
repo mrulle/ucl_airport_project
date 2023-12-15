@@ -15,7 +15,7 @@ public class ProdCheckinRepository : ICheckinRepository
     }
     public string Add(CheckinModel item)
     {
-        var cs = "Host=postgres;Username=postgres;Password=postgres;Database=production";
+        var cs = "Host=postgres;Username=postgres;Password=postgres;Database=postgres";
         using var con = new NpgsqlConnection(cs);
         string checkinId = Guid.NewGuid().ToString();
         con.Open();
