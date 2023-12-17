@@ -1,33 +1,28 @@
 const { Builder, By, Key, until, WebDriver } = require('selenium-webdriver');
+const assert = require('assert');
 
-// Configure the WebDriver
-const driver = new Builder()
-  .forBrowser('firefox')
-  .usingServer('http://localhost:4444/wd/hub') // Selenium server address
-  .build();
+let driver;
 
-// Test logic
-(async function example() {
-  try {
-    await driver.get('http://frontend');
+describe('End-to-End Tests', function() {
 
-    let title = await driver.getTitle();
+  it('Should load the homepage', async function() {
+    try {
+      driver = new Builder()
+        .forBrowser('firefox')
+        .usingServer('http://localhost:4444/wd/hub') // Selenium server address
+        .build()
 
-    console.log(title);
+      await driver.get('http://frontend');
 
-    // Perform more actions or assertions
-    // ...
+      const title = await driver.getTitle();
 
-    // // Example: Capture a screenshot for debugging purposes
-    // await driver.takeScreenshot().then(
-    //   function(image) {
-    //     require('fs').writeFileSync('screenshot.png', image, 'base64');
-    //   }
-    // );
-  } catch (error) {
-    console.error('Test error:', error);
-  } finally {
-    // Close the browser session
-    await driver.quit();
-  }
-})();
+      assert.strictEqual(title, 'Vite App');
+      
+    } catch (error) {
+      console.log('Test error:', error);
+    } finally {
+      driver.quit();
+    }
+  });
+});
+
